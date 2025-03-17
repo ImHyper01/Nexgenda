@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
-
 import { registerUserAction } from "@/data/actions/auth-actions";
 
 import {
@@ -17,17 +16,22 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
+import { ZodErrors } from "../custom/zodErrors";
+
 const INITIAL_STATE = {
   data: null,
 };
 
 export function SignupForm() {
-  const [formState, formAction] = useActionState(registerUserAction, INITIAL_STATE);
+  const [formState, formAction] = useActionState(
+    registerUserAction,
+    INITIAL_STATE
+  );
 
   console.log("## will render on client ##");
   console.log(formState);
   console.log("###########################");
-  
+
   return (
     <div className="w-full max-w-md">
       <form action={formAction}>
@@ -47,6 +51,7 @@ export function SignupForm() {
                 type="text"
                 placeholder="username"
               />
+              <ZodErrors error={formState?.zodErrors?.username} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -56,6 +61,7 @@ export function SignupForm() {
                 type="email"
                 placeholder="name@example.com"
               />
+              <ZodErrors error={formState?.zodErrors?.email} />
             </div>
 
             <div className="space-y-2">
@@ -66,6 +72,7 @@ export function SignupForm() {
                 type="password"
                 placeholder="password"
               />
+              <ZodErrors error={formState?.zodErrors?.password} />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
