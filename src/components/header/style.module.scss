@@ -1,0 +1,35 @@
+.header {
+  border-color: black;
+  border-bottom-width: thin;
+  border-bottom-style: solid;
+  display: flex;
+  justify-content: space-between;  /* Ruimte tussen logo en button */
+  align-items: center;  /* Centraal uitlijnen van de elementen verticaal */
+  padding: 0 30px;  /* Ruimte aan de zijkanten */
+  height: 100px;  /* Vaste hoogte voor de header */
+}
+
+.section1,
+.section2 {
+  display: flex;
+  align-items: center;  /* Verticaal uitlijnen van de logo en button */
+}
+
+.logo {
+  width: 150px;  /* De breedte van het logo instellen */
+  height: auto;   /* Zorg ervoor dat de hoogte automatisch wordt aangepast op basis van de breedte */
+}
+
+.signInButton {
+  padding: 10px 20px;
+  background-color: #8075FF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.signInButton:hover {
+  background-color: #7167e2;
+}
