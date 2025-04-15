@@ -1,0 +1,113 @@
+.container {
+    max-width: 100%;
+    margin-top: 5%;
+}
+
+.wrapper {
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 16px;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+    color: #555;
+}
+
+.pricingPlans {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20%;
+    height: 600px;
+}
+
+.plan {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+    width: 30%;
+    min-width: 250px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+    }
+}
+
+.planTitle {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.planPrice {
+    font-size: 28px;
+    font-weight: 700;
+    color: #007BFF;
+    margin-bottom: 20px;
+}
+
+.planDescription {
+    font-size: 16px;
+    color: #777;
+    margin-bottom: 30px;
+    line-height: 1.5; /* Zorgt ervoor dat de tekst meer ruimte heeft */
+}
+
+.planButton {
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+    &:hover {
+        background-color: #0056b3;
+    }
+}
+
+// "Meest Populair" badge styling
+.mostPopularBadge {
+    background-color: #FFDC00;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 50px;
+    display: inline-block;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+
+// Mobile Responsiveness
+@media (max-width: 768px) {
+    .pricingPlans {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .plan {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+}
