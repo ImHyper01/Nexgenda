@@ -1,7 +1,6 @@
 import React from "react";
 import styles from './style.module.scss';
 
-
 export default function Price() {
     return(
         <div className={styles.container}>
@@ -20,28 +19,27 @@ export default function Price() {
                         Basisplanner zonder AI-aanbevelingen
                     </p>
                     <p className={styles.planDescription}>
-                    met maximaal 1 gekoppelde agenda
-                    </p>
-                    <p className={styles.planDescription}>
+                        met maximaal 1 gekoppelde agenda
                     </p>
                     <button className={styles.planButton}>Start Gratis</button>
                 </div>
 
-                <div className={styles.plan}>
+                <div className={`${styles.plan} ${styles.proPlan}`}>
                     <div className={styles.mostPopularBadge}>Meest Populair</div>
                     <h2 className={styles.planTitle}>Pro Versie</h2>
                     <p className={styles.planPrice}>€6,99 / maand</p>
                     <p className={styles.planDescription}>
-                       - Krijg AI-suggesties 
+                        - Krijg AI-suggesties 
                     </p>
                     <p className={styles.planDescription}>
-                    - meerdere gekoppelde agenda’s
+                        - meerdere gekoppelde agenda’s
                     </p>
                     <p className={styles.planDescription}>
-                    - reminders en slimme weekplanning.
+                        - reminders en slimme weekplanning.
                     </p>
                     <button className={styles.planButton}>Kies Pro Versie</button>
                 </div>
+
 
                 <div className={styles.plan}>
                     <h2 className={styles.planTitle}>Team Versie</h2>
@@ -50,9 +48,8 @@ export default function Price() {
                         Voor bedrijven met teamoverzicht
                     </p>
                     <p className={styles.planDescription}>
-                    gedeelde taken en gedetailleerde analyses
+                        gedeelde taken en gedetailleerde analyses
                     </p>
-                    
                     <button className={styles.planButton}>Kies Team Versie</button>
                 </div>
             </div>

@@ -28,8 +28,8 @@
     gap: 20px;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: stretch; // zorgt dat alle plannen gelijke hoogte krijgen
     margin-bottom: 20%;
-    height: 600px;
 }
 
 .plan {
@@ -41,7 +41,12 @@
     width: 30%;
     min-width: 250px;
     transition: all 0.3s ease;
-    
+    height: 600px;
+    // Flexbox voor verticale uitlijning van inhoud
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
     &:hover {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         transform: translateY(-5px);
@@ -58,19 +63,19 @@
 .planPrice {
     font-size: 28px;
     font-weight: 700;
-    color: #007BFF;
+    color: #8075FF;
     margin-bottom: 20px;
 }
 
 .planDescription {
     font-size: 16px;
     color: #777;
-    margin-bottom: 30px;
-    line-height: 1.5; /* Zorgt ervoor dat de tekst meer ruimte heeft */
+    margin-bottom: 20px;
+    line-height: 1.5;
 }
 
 .planButton {
-    background-color: #007BFF;
+    background-color: #8075FF;
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -79,13 +84,14 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    
+    margin-top: auto; // Zorgt dat de knop altijd onderaan staat bij weinig content
+    align-self: center;
+
     &:hover {
-        background-color: #0056b3;
+        background-color: #8075FF;
     }
 }
 
-// "Meest Populair" badge styling
 .mostPopularBadge {
     background-color: #FFDC00;
     color: #333;
@@ -96,6 +102,20 @@
     display: inline-block;
     margin-bottom: 15px;
     text-transform: uppercase;
+    align-self: center;
+}
+
+.proPlan {
+    background-color: #f0f6ff; // een zachte blauw-tint
+    border: 2px solid #8075FF;
+
+    // Eventueel iets meer nadruk
+    transform: scale(1.02);
+
+    &:hover {
+        box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3);
+        transform: scale(1.03);
+    }
 }
 
 
@@ -105,7 +125,7 @@
         flex-direction: column;
         align-items: center;
     }
-    
+
     .plan {
         width: 80%;
         margin-bottom: 20px;
