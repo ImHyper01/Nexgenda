@@ -29,13 +29,16 @@ export default function Price() {
                     <h2 className={styles.planTitle}>Pro Versie</h2>
                     <p className={styles.planPrice}>€6,99 / maand</p>
                     <p className={styles.planDescription}>
-                        - Krijg AI-suggesties 
+                        Incluted alles van de gratis versie
                     </p>
                     <p className={styles.planDescription}>
-                        - meerdere gekoppelde agenda’s
+                        Krijg AI-suggesties 
                     </p>
                     <p className={styles.planDescription}>
-                        - reminders en slimme weekplanning.
+                        meerdere gekoppelde agenda’s
+                    </p>
+                    <p className={styles.planDescription}>
+                        reminders en slimme weekplanning.
                     </p>
                     <button className={styles.planButton}>Kies Pro Versie</button>
                 </div>
@@ -44,6 +47,9 @@ export default function Price() {
                 <div className={styles.plan}>
                     <h2 className={styles.planTitle}>Team Versie</h2>
                     <p className={styles.planPrice}>€12,99+/gebruiker/maand</p>
+                    <p className={styles.planDescription}>
+                        Incluted alles van de gratis en pro versie
+                    </p>
                     <p className={styles.planDescription}>
                         Voor bedrijven met teamoverzicht
                     </p>

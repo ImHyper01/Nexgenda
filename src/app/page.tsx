@@ -3,6 +3,7 @@ import Header from '../components/header';
 import Landing from '../components/Landing';
 import Benefits from '../components/Benefits';
 import Price from '../components/Price';
+import Footer from '../components/Footer';
 
 export default function index() {
 
@@ -12,6 +13,7 @@ export default function index() {
       <Landing />
       <Benefits />
       <Price />
+      <Footer />
    </div>
   )
 }
