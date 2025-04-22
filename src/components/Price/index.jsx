@@ -5,58 +5,57 @@ export default function Price() {
     return(
         <div className={styles.container}>
             <div className={styles.wrapper}>
-                <h1 className={styles.title}>Onze prijsplannen</h1>
+                <h1 className={styles.title}>Our Pricing Plans</h1>
                 <p className={styles.subtitle}>
-                    Kies het juiste plan voor jou. We hebben een gratis versie, een Pro versie met AI-aanbevelingen, en een Team versie voor bedrijven.
+                    Choose the right plan for you. We offer a free version, a Pro version with AI recommendations, and a Team version for businesses.
                 </p>
             </div>
             
             <div className={styles.pricingPlans}>
                 <div className={styles.plan}>
-                    <h2 className={styles.planTitle}>Gratis Versie</h2>
-                    <p className={styles.planPrice}>€0 / maand</p>
+                    <h2 className={styles.planTitle}>Free Version</h2>
+                    <p className={styles.planPrice}>€0 / month</p>
                     <p className={styles.planDescription}>
-                        Basisplanner zonder AI-aanbevelingen
+                        Basic planner without AI recommendations
                     </p>
                     <p className={styles.planDescription}>
-                        met maximaal 1 gekoppelde agenda
+                        with up to 1 linked calendar
                     </p>
-                    <button className={styles.planButton}>Start Gratis</button>
+                    <button className={styles.planButton}>Start Free</button>
                 </div>
 
                 <div className={`${styles.plan} ${styles.proPlan}`}>
-                    <div className={styles.mostPopularBadge}>Meest Populair</div>
-                    <h2 className={styles.planTitle}>Pro Versie</h2>
-                    <p className={styles.planPrice}>€6,99 / maand</p>
+                    <div className={styles.mostPopularBadge}>Most Popular</div>
+                    <h2 className={styles.planTitle}>Pro Version</h2>
+                    <p className={styles.planPrice}>€6.99 / month</p>
                     <p className={styles.planDescription}>
-                        Incluted alles van de gratis versie
+                        Includes everything from the free version
                     </p>
                     <p className={styles.planDescription}>
-                        Krijg AI-suggesties 
+                        Get AI suggestions
                     </p>
                     <p className={styles.planDescription}>
-                        meerdere gekoppelde agenda’s
+                        multiple linked calendars
                     </p>
                     <p className={styles.planDescription}>
-                        reminders en slimme weekplanning.
+                        reminders and smart weekly planning
                     </p>
-                    <button className={styles.planButton}>Kies Pro Versie</button>
+                    <button className={styles.planButton}>Choose Pro Version</button>
                 </div>
 
-
                 <div className={styles.plan}>
-                    <h2 className={styles.planTitle}>Team Versie</h2>
-                    <p className={styles.planPrice}>€12,99+/gebruiker/maand</p>
+                    <h2 className={styles.planTitle}>Team Version</h2>
+                    <p className={styles.planPrice}>€12.99+/user/month</p>
                     <p className={styles.planDescription}>
-                        Incluted alles van de gratis en pro versie
+                        Includes everything from the free and pro version
                     </p>
                     <p className={styles.planDescription}>
-                        Voor bedrijven met teamoverzicht
+                        For businesses with team overview
                     </p>
                     <p className={styles.planDescription}>
-                        gedeelde taken en gedetailleerde analyses
+                        shared tasks and detailed analytics
                     </p>
-                    <button className={styles.planButton}>Kies Team Versie</button>
+                    <button className={styles.planButton}>Choose Team Version</button>
                 </div>
             </div>
         </div>

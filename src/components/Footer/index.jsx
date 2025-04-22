@@ -12,9 +12,9 @@ export default function Footer() {
                         <img src="./VisionFlowLogo.png" alt="logo" />
                     </div>
                     <p>
-                        #45, is neutral examination.<br />
-                        Fedric, math notions<br />
-                        colonelk, 4346003
+                        info@visionflow.com<br />
+                       0800-123123<br />
+                        Rotterdam, 2021KP
                     </p>
                 </div>
 
@@ -31,18 +31,18 @@ export default function Footer() {
                 <div className={styles.section}>
                     <h4>KNOW MORE</h4>
                     <ul>
-                        <li>blandit cursus</li>
-                        <li>ultricesper a lacus</li>
-                        <li>fugiat nulla</li>
-                        <li>dolore magna</li>
+                        <li>Live Update Bar</li>
+                        <li>User-Friendly Interface</li>
+                        <li>Integration Features</li>
+                        <li>Get Started Today</li>
                     </ul>
                 </div>
 
                 <div className={styles.section}>
                     <h4>ABOUT</h4>
                     <ul>
-                        <li>Vestibulum morbi blandit</li>
-                        <li>eros sagittis</li>
+                        <li>Who made it</li>
+                        <li>The Idea</li>
                         <li>ultricies orci sagittis</li>
                         <li>adipiscing</li>
                     </ul>
