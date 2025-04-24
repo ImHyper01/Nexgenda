@@ -1,9 +1,17 @@
-import React from "react";
+'use client';
+import React, { useState } from "react";
 import styles from './style.module.scss';
+import Chatbot from '../Chatbot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGear } from '@fortawesome/free-solid-svg-icons';
 
 export default function Sidebar() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
+
   return (
     <div className={styles.sidebar}>
       <div>
@@ -23,7 +31,14 @@ export default function Sidebar() {
       </div>
 
       <div className={styles.aiHelp}>
-        <button className={styles.helpButton}>🤖 Help AI met je planning!</button>
+        <button className={styles.helpButton} onClick={toggleChat}>
+          🤖 Help AI met je planning!
+        </button>
+        {isChatOpen && (
+          <div className={styles.chatWrapper}>
+            <Chatbot />
+          </div>
+        )}
       </div>
     </div>
   );
