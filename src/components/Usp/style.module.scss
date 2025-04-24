@@ -1,0 +1,37 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    text-align: center;
+    margin-bottom: 10%;
+}
+
+.h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #1f2937;
+}
+
+.h4 {
+    font-size: 2.25rem;
+    font-weight: 600;
+    color: #111827;
+    padding-bottom: 0.5rem;
+  }
+
+.signInButton {
+    padding: 17px 20px;
+    background-color: #8075FF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 160px;
+  }
+  
+  .signInButton:hover {
+    background-color: #7167e2;
+  }

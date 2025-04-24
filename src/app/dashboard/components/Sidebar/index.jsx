@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from './style.module.scss';
 import Chatbot from '../Chatbot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +8,8 @@ import { faGear } from '@fortawesome/free-solid-svg-icons';
 
 export default function Sidebar() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const router = useRouter();
+
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
@@ -21,7 +24,9 @@ export default function Sidebar() {
           </button>
         </div>
         <button className={styles.menuButton}>Agenda</button>
-        <button className={styles.menuButton}>to-do-list</button>
+        <button type="button" onClick={() => router.push('/todolist')} className={styles.menuButton}>
+            To-Do List
+        </button>
       </div>
 
       <div className={styles.notificationBox}>
