@@ -1,0 +1,24 @@
+.mainLayout {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem;
+  
+    // Zorg dat het niet de hele breedte neemt
+    align-items: flex-start;
+  
+    // Optioneel responsief
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+  
+  .mainLayout :global(.agendaGrid) {
+    flex: 1 1 70%;
+    max-width: 900px;
+  }
+  
+  .mainLayout :global(.sidebar) {
+    flex: 1 1 30%;
+    min-width: 250px;
+  }
+  
