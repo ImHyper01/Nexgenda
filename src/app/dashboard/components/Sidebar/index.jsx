@@ -1,13 +1,16 @@
 import React from "react";
 import styles from './style.module.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 
 export default function Sidebar() {
   return (
     <div className={styles.sidebar}>
       <div>
         <div className={styles.topBar}>
-          <img src="/logo.png" alt="Vision Flow Logo" className={styles.logo} />
-          <button className={styles.iconButton}>⚙️</button>
+          <button className={styles.iconButton}>
+            <FontAwesomeIcon icon={faGear} />
+          </button>
         </div>
         <button className={styles.menuButton}>Agenda</button>
         <button className={styles.menuButton}>to-do-list</button>
