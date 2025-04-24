@@ -3,21 +3,21 @@
   border-bottom-width: thin;
   border-bottom-style: solid;
   display: flex;
-  justify-content: space-between;  /* Ruimte tussen logo en button */
-  align-items: center;  /* Centraal uitlijnen van de elementen verticaal */
-  padding: 0 30px;  /* Ruimte aan de zijkanten */
-  height: 100px;  /* Vaste hoogte voor de header */
+  justify-content: space-between;  
+  align-items: center;  
+  padding: 0 30px;  
+  height: 100px;  
 }
 
 .section1,
 .section2 {
   display: flex;
-  align-items: center;  /* Verticaal uitlijnen van de logo en button */
+  align-items: center; 
 }
 
 .logo {
-  width: 150px;  /* De breedte van het logo instellen */
-  height: auto;   /* Zorg ervoor dat de hoogte automatisch wordt aangepast op basis van de breedte */
+  width: 150px;  
+  height: auto; 
 }
 
 .signOutButton {
@@ -28,6 +28,9 @@
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
+  display: flex;              
+  align-items: center;         
+  gap: 8px; 
 }
 
 .signOutButton:hover {
