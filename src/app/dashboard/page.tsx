@@ -1,8 +1,12 @@
+'use client';
 import HeaderLogOut from '../../components/header-logout';
 import Topbar from '../dashboard/components/Topbar';
 import Agenda from './components/Agendagrid';
 import Sidebar from '../dashboard/components/Sidebar';
 import styles from './style.module.scss';
+
+
+
 
 const appointments = [
   {
@@ -19,6 +23,8 @@ const appointments = [
 
 
 export default function DashboardRoute() {
+
+
     return (
       <div>
         <HeaderLogOut />
@@ -27,7 +33,7 @@ export default function DashboardRoute() {
   
           <div className={styles.mainLayout}>
             <Agenda appointments={appointments} />
-            <Sidebar />
+            <Sidebar  />
           </div>
           
         </div>

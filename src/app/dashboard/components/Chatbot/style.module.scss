@@ -1,61 +1,99 @@
-/* Stel basis stijlen in voor de chatbot */
 .chatbotcontainer {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 10px;
-    background-color: #f4f4f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .chathistory {
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 5px;
-    height: 400px;
-    overflow-y: scroll;
-  }
-  
-  .usermessage {
-    text-align: right;
-    background-color: #dcf8c6;
-    margin: 5px;
-    padding: 5px;
-    border-radius: 5px;
-  }
-  
-  .aimessage {
-    text-align: left;
-    background-color: #e4e4e4;
-    margin: 5px;
-    padding: 5px;
-    border-radius: 5px;
-  }
-  
-  .inputcontainer {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .input {
-    width: 80%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .button {
-    padding: 8px 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #4caf50;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .button:disabled {
-    background-color: #cccccc;
-  }
-  
+  width: 90%;
+  max-width: 700px;
+  height: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.quickButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #ddd;
+}
+
+.quickButton {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quickButton:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.chathistory {
+  flex: 1;
+  min-height: 0;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: #f4f4f9;
+}
+
+.usermessage {
+  align-self: flex-end;
+  background-color: #dcf8c6;
+  color: #001b00;
+  padding: 0.75rem 1rem;
+  border-radius: 16px 16px 0 16px;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.aimessage {
+  align-self: flex-start;
+  background-color: #e4e4e4;
+  color: #1a1a1a;
+  padding: 0.75rem 1rem;
+  border-radius: 16px 16px 16px 0;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.inputcontainer {
+  display: flex;
+  border-top: 1px solid #ddd;
+  padding: 0.5rem;
+  background-color: #fff;
+}
+
+.input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 20px 0 0 20px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.button {
+  width: 3.5rem;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  font-size: 1.25rem;
+  border-radius: 0 20px 20px 0;
+  cursor: pointer;
+}
+
+.button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
