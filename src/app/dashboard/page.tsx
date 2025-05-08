@@ -28,7 +28,7 @@ export default function DashboardRoute() {
     return (
       <div>
         <HeaderLogOut />
-        <div>
+        <div> 
           <Topbar />
   
           <div className={styles.mainLayout}>

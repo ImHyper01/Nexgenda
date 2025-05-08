@@ -1,12 +1,11 @@
 'use client';
-
 import React, { useState } from 'react';
 import styles from './style.module.scss';
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([
     {
-      message: "Hallo, ik ben Soul, je AI-klantenservice-assistent van Coolblue! Hoe kan ik je helpen?",
+      message: "Hallo, ik ben Nexi, je AI-assistent van Nexgenda! Hoe kan ik je helpen vandaag?",
       sender: 'bot'
     }
   ]);
@@ -64,6 +63,7 @@ export default function Chatbot() {
 
   return (
     <div className={styles.chatbotcontainer}>
+      <h4 className={styles.quickH4}>Quick Actions</h4>
       <div className={styles.quickButtons}>
         {quickActions.map((label, idx) => (
           <button
