@@ -189,19 +189,23 @@
   /* Grid voor invoervelden en knop */
   .todoInput {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
     gap: 0.75rem;
     margin-bottom: 1.5rem;
   }
   .todoInput input[type="text"],
-  .todoInput input[type="datetime-local"] {
+  .todoInput input[type="date"],
+  .todoInput input[type="time"],
+  .todoInput select {
     padding: 0.75rem;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     font-size: 0.95rem;
+    background: white;
   }
   .todoInput button {
-    background-color: #3b82f6; /* blue-500 */
+    background-color: #3b82f6;
     color: #fff;
     padding: 0 1rem;
     border: none;
@@ -210,7 +214,7 @@
     transition: background-color 0.2s, transform 0.2s;
   }
   .todoInput button:hover {
-    background-color: #2563eb; /* blue-600 */
+    background-color: #2563eb;
     transform: translateY(-1px);
   }
   
