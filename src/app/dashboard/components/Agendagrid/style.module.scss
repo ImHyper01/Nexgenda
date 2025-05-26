@@ -116,3 +116,36 @@
   border: none; padding: 0.25rem 0.5rem;
   border-radius: 0.25rem; cursor: pointer;
 }
+
+.daySelector {
+  margin-left: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: white;
+  font-size: 0.9rem;
+}
+
+/* Suggestie-knop */
+.suggestButton {
+  margin-left: 1rem;
+  background: #00c896;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+/* Suggestie-modal lijst */
+.suggestList {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+.suggestItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
