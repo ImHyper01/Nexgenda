@@ -23,15 +23,17 @@ function ToDoListPopup({ onClose }) {
     setItems(prev => prev.filter((_, i) => i !== index));
   };
 
+  
   const addToAgenda = (item) => {
-    // Navigeer naar de agenda met taak en datum als query params
     const params = new URLSearchParams({
       title: item.text,
-      date: item.deadline
+      date:  item.deadline       // bv. "2025-05-26T12:00"
     });
-    router.push(`/dashboard/Agendagrid?${params.toString()}`);
+    router.push(`/dashboard?${params.toString()}`);
     onClose();
   };
+
+
 
   return (
     <div className={styles.todoContent}>

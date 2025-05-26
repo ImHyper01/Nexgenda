@@ -12,7 +12,7 @@ export default function Footer() {
                         <img src="./VisionFlowLogo.png" alt="logo" />
                     </div>
                     <p>
-                        info@visionflow.com<br />
+                        info@nexengda.com<br />
                        0800-123123<br />
                         Rotterdam, 2021KP
                     </p>

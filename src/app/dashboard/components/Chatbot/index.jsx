@@ -87,7 +87,7 @@ export default function Chatbot() {
           </div>
         ))}
         {typing && (
-          <div className={styles.aimessage}>Soul is aan het typen…</div>
+          <div className={styles.aimessage}>Nexi is aan het typen…</div>
         )}
       </div>
 

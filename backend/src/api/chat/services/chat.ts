@@ -5,7 +5,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-const systemPrompt = `…je system prompt…`;
+const systemPrompt = `Geef antwoord op alles behalven recepten`;
 
 export default {
   async askSoul(prompt: string) {
