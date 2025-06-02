@@ -1,3 +1,8 @@
+.wrapper {
+  /* Optioneel: extra styling rondom de grid/container */
+}
+
+/* ================= NAVBAR ================= */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -5,12 +10,32 @@
   margin-bottom: 1rem;
 }
 
-/* Dagheaders + tijdlabels */
+.suggestButton {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #00c896;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.suggestButton:hover {
+  background-color: #00b07e;
+}
+
+/* ============= DAGHEADERS + TIJD ============= */
 .dayHeaderRow {
   display: grid;
   grid-template-columns: 80px repeat(7, 1fr);
 }
-
+.timeHeader {
+  background: #f9fafb;
+}
 .dayHeader {
   position: relative;
   text-align: center;
@@ -20,70 +45,74 @@
   background: #f3f4f6;
 }
 
-.timeHeader {
-  background: #f9fafb;
+/* ================== GRID ================== */
+/* We zetten hier expliciet grid-template-columns, daarna grid-auto-rows */
+.grid {
+  display: grid;
+  /* Eerst kolom van 80px (tijd-labels), daarna 7 gelijke kolommen voor de dagen */
+  grid-template-columns: 80px repeat(7, 1fr);
+  /* Elke rij (uurblok) is precies 60px hoog */
+  grid-auto-rows: 60px;
+  border: 1px solid #d1d5db;
+  position: relative; /* afspraak-balkjes (z-index) komen erboven */
 }
 
+/* Tijd-labels (eerste kolom). We plaatsen ze expliciet via inline style in JSX */
 .timeLabel {
-  text-align: right;
-  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
   font-size: 0.875rem;
   background: #f9fafb;
   border-top: 1px solid #e5e7eb;
+  /* gridColumn en gridRow worden inline ingesteld in de JSX */
 }
 
-/* De hoofd-grid (weekday × hours) */
-.grid {
-  display: grid;
-  grid-template-columns: 80px repeat(7, 1fr);
-  border: 1px solid #d1d5db;
-}
-
+/* Elke lege cel in de grid (achtergrondraster) */
 .cell {
-  position: relative;
   border-top: 1px solid #e5e7eb;
   border-left: 1px solid #e5e7eb;
-  height: 60px;       /* hoog genoeg zodat een balkje opvalt */
-  padding: 0;         /* padding op 0 voor balken die de volledige cell vullen */
-  overflow: hidden;   /* als een balk nét iets groter is, krijgt hij geen scrollbar */
+  padding: 0;          /* geen padding, afspraak-balken geven zelf marge */
+  box-sizing: border-box;
+  /* gridColumn en gridRow worden inline ingesteld in de JSX */
 }
 
-/* ------------ Aangepaste afspraak-styling ----------- */
-/* De gekleurde balkjes (appointments) */
+/* ============= AFSPRAAKBLOKKEN ============= */
+/* Deze styling is bijna identiek aan wat je eerder had, met één aanpassing:
+   we geven marge rondom in plaats van absolute posities. */
 .appointment {
-  position: absolute;
-  top: 2px;            /* beetje ruimte bovenaan, niet té strak */
-  left: 2px;           /* klein beetje marge links */
-  right: 2px;          /* even klein beetje marge rechts */
-  bottom: 2px;         /* kleine marge onderaan */
-  background-color: #000000; /* fallback-kleur, maar wordt overschreven door inline style */
-  border-radius: 0.25rem;     /* milde ronding op alle hoeken */
-  padding: 2px 4px;    /* binnenruimte, zodat tekst niet tegen de rand zit */
-  font-size: 0.75rem;  /* iets kleinere lettergrootte */
-  color: #000000;      /* altijd witte tekst op de gekleurde achtergrond */
-  display: flex;
-  justify-content: space-between; /* titel links, tijd rechts */
-  align-items: center;
-  font-weight: 900;
+  /* Iets marge rondom, zodat balk niet tegen celranden plakt */
+  margin: 2px;
+  border-radius: 0.375rem;  /* afgeronde hoeken zoals voorheen */
+  padding: 0.25rem;         /* binnenruimte (zoals je eerder had) */
+  font-size: 0.75rem;       /* dezelfde kleine lettergrootte */
+  color: black; 
+  font-weight: 600;            /* witte tekst tegen gekleurde achtergrond */
   cursor: pointer;
-  box-sizing: border-box; /* zodat padding én border binnen de cell blijven */
+  display: flex;            /* flex om titel links en tijd rechts te plaatsen */
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 10px;
+  z-index: 1;               /* komt boven de lege cellen (achtergrondraster) */
+  /* achtergrondkleur (background-color) zetten we inline in JSX via colorMap[a.color] */
 }
 
-/* Apart label voor titel (tekstueel) */
 .appointmentTitle {
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* als titel te lang is, wordt-ie afgekapt met ... */
+  text-overflow: ellipsis; /* “...” indien titel te lang is */
 }
 
-/* Apart label voor starttijd (bv. “13:30” rechts uitgelijnd) */
 .appointmentTime {
-  font-weight: 500;
-  margin-left: 4px;   /* kleine spatie tussen titel en tijd */
-  flex-shrink: 0;     /* voorkomt dat de tijd mee kleiner wordt bij heel weinig ruimte */
+  font-weight: 600;
+  margin-left: 4px;
+  flex-shrink: 0; /* voorkomt dat de tijd te veel krimpt */
+  font-weight: 400;
 }
 
-/* -------------- Overige styling -------------- */
+/* ============= MODALS ============= */
 .overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -124,6 +153,7 @@
   cursor: pointer;
 }
 
+/* ============= SUGGESTIE-MODAL ============= */
 .suggestList {
   list-style: none;
   padding: 0;
@@ -146,7 +176,7 @@
   cursor: pointer;
 }
 
-/* Oude per-dag-knop (optioneel; je gebruikt hem niet meer) */
+/* ============= (Optioneel) Oude per-dagknop ============= */
 .daySuggestButton {
   position: absolute;
   top: 0.25rem;
@@ -158,33 +188,4 @@
   padding: 0.1rem 0.3rem;
   font-size: 0.75rem;
   cursor: pointer;
-}
-
-/* Één enkele Suggestie-knop in de navbar */
-.suggestButton {
-  margin-left: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #00c896;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.suggestButton:hover {
-  background-color: #00b07e;
-}
-
-/* Optioneel: dropdown om dag te selecteren */
-.daySelector {
-  margin-left: 1rem;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  background: white;
-  font-size: 0.9rem;
 }

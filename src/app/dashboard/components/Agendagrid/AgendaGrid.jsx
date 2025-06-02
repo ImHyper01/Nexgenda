@@ -1,9 +1,14 @@
 'use client';
 import React, { useState } from 'react';
-import styles            from './style.module.scss';
+import styles from './style.module.scss';
 import {
-  startOfWeek, addDays, format,
-  setHours, isSameDay, isWithinInterval
+  startOfWeek,
+  addDays,
+  format,
+  setHours,
+  isSameDay,
+  isWithinInterval,
+  differenceInHours
 } from 'date-fns';
 
 const hours = Array.from({ length: 10 }, (_, i) => 8 + i);
@@ -18,8 +23,8 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
   const [weekStart, setWeekStart] = useState(
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
-  const [selected, setSelected]           = useState(null);
-  const [suggestions, setSuggestions]     = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -29,21 +34,32 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
   const computeSuggestionsForDay = day => {
     const free = [];
     hours.forEach(hour => {
-      const s = setHours(day, hour), e = setHours(day, hour+1);
+      const s = setHours(day, hour);
+      const e = setHours(day, hour + 1);
       const overlap = appointments.some(a =>
         isSameDay(a.start, day) &&
-        ( isWithinInterval(s, { start: a.start, end: a.end }) ||
-          isWithinInterval(e, { start: a.start, end: a.end }) )
+        (
+          isWithinInterval(s, { start: a.start, end: a.end }) ||
+          isWithinInterval(e, { start: a.start, end: a.end })
+        )
       );
-      if (!overlap) free.push({ title: 'Voorstel', start: s, end: e, color: 'blue' });
+      if (!overlap) {
+        free.push({
+          id:    `${day.toISOString()}-${hour}`,
+          title: 'Voorstel',
+          start: s,
+          end:   e,
+          color: 'blue'
+        });
+      }
     });
-    setSuggestions(free.slice(0,3));
+    setSuggestions(free.slice(0, 3));
     setShowSuggestModal(true);
   };
 
   return (
     <div className={styles.wrapper}>
-      {/* Navigatie */}
+      {/* ================= NAVIGATIE ================= */}
       <div className={styles.navbar}>
         <button onClick={prev}>← Vorige</button>
         <h2>Week van {format(weekStart, 'dd MMM yyyy')}</h2>
@@ -56,63 +72,112 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         </button>
       </div>
 
-      {/* Dagheaders (zonder per-dag knoppen) */}
+      {/* ================ DAGHEADERS ================ */}
       <div className={styles.dayHeaderRow}>
         <div className={styles.timeHeader}></div>
-        {days.map((day,i) => (
+        {days.map((day, i) => (
           <div key={i} className={styles.dayHeader}>
             {format(day, 'EEEE dd/MM')}
           </div>
         ))}
       </div>
 
-      {/* Grid */}
+      {/* ================== GRID =================== */}
       <div className={styles.grid}>
-        {hours.map(hour => (
+        {/*
+          1) Eerst renderen we ELKE tijd-label + de lege cellen.
+             We geven expliciet gridColumn en gridRow mee per element,
+             zodat de tijd-label altijd exact in de eerste kolom links staat.
+        */}
+        {hours.map((hour, rowIndex) => (
           <React.Fragment key={hour}>
-            <div className={styles.timeLabel}>{hour}:00</div>
-            {days.map((day,j) => {
-              const t = setHours(day, hour);
-              const a = appointments.find(a =>
-                isSameDay(a.start, day) &&
-                isWithinInterval(t, { start: a.start, end: a.end })
-              );
-              return (
-                <div key={`${j}-${hour}`} className={styles.cell}>
-                  {a && (
-                    <div
-                      className={styles.appointment}
-                      style={{ backgroundColor: colorMap[a.color] }}
-                      onClick={() => setSelected(a)}
-                    >
-                      <span className={styles.appointmentTitle}>
-                        {a.title}
-                      </span>
-                      <span className={styles.appointmentTime}>
-                        {format(a.start, 'HH:mm')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {/* 1e kolom: het tijd-label */}
+            <div
+              className={styles.timeLabel}
+              style={{
+                gridColumn: 1,
+                gridRow:    rowIndex + 1
+              }}
+            >
+              {hour}:00
+            </div>
+
+            {/* kolom 2 t/m 8: lege cellen (één per dag) */}
+            {days.map((day, colIndex) => (
+              <div
+                key={`${colIndex}-${hour}`}
+                className={styles.cell}
+                style={{
+                  gridColumn: colIndex + 2,       // kolom 2 = maandag, 3 = dinsdag, etc.
+                  gridRow:    rowIndex + 1        // dezelfde rij als het tijd-label
+                }}
+              />
+            ))}
           </React.Fragment>
         ))}
+
+        {/*
+          2) Render alle afspraken als AANEENGESLOTEN balken.
+             We zetten expliciet gridColumn en gridRow, zodat
+             een meer-uur-afspraak 1 div blijft, met span van x rijen.
+        */}
+        {appointments.map(a => {
+          // Op welke dag (index 0..6) valt deze afspraak?
+          const dayIdx = days.findIndex(d => isSameDay(d, a.start));
+          if (dayIdx === -1) return null;
+
+          // Bereken startuur en duur in hele uren
+          const startHour = a.start.getHours();
+          const endHour   = a.end.getHours();
+          let duur = differenceInHours(a.end, a.start);
+          if (duur < 1) duur = 1; // minstens 1 uur
+
+          // Reken om naar grid-rij: rij 1 = 8:00–9:00, rij 2 = 9:00–10:00, etc.
+          const rowStart = (startHour - 8) + 1;
+
+          return (
+            <div
+              key={a.id}
+              className={styles.appointment}
+              onClick={() => setSelected(a)}
+              style={{
+                gridColumn:     dayIdx + 2,               // 2 = maandag, 3 = dinsdag, ...
+                gridRow:        `${rowStart} / span ${duur}`,
+                backgroundColor: colorMap[a.color] || '#d1d5db'
+              }}
+            >
+              <span className={styles.appointmentTitle}>
+                {a.title}
+              </span>
+              <span className={styles.appointmentTime}>
+                {format(a.start, 'HH:mm')}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Detail-modal */}
+      {/* =============== DETAIL‐MODAL =============== */}
       {selected && (
         <div className={styles.overlay} onClick={() => setSelected(null)}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={() => setSelected(null)}>×</button>
+            <button
+              className={styles.closeButton}
+              onClick={() => setSelected(null)}
+            >
+              ×
+            </button>
             <h3>{selected.title}</h3>
             <p>
-              Start: {selected.start.toLocaleString()}<br/>
+              Start: {selected.start.toLocaleString()}<br />
               Eind:  {selected.end.toLocaleString()}
             </p>
             <button
               className={styles.deleteButton}
-              onClick={() => { onRemove(selected.id); setSelected(null); }}
+              onClick={() => {
+                onRemove(selected.id);
+                setSelected(null);
+              }}
             >
               Verwijder afspraak
             </button>
@@ -120,17 +185,22 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         </div>
       )}
 
-      {/* Suggestie-modal */}
+      {/* ============= SUGGESTIE‐MODAL ============= */}
       {showSuggestModal && (
         <div className={styles.overlay} onClick={() => setShowSuggestModal(false)}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={() => setShowSuggestModal(false)}>×</button>
+            <button
+              className={styles.closeButton}
+              onClick={() => setShowSuggestModal(false)}
+            >
+              ×
+            </button>
             <h3>Beschikbare blokken (1u)</h3>
             <ul className={styles.suggestList}>
-              {suggestions.map((slot,i) => (
+              {suggestions.map((slot, i) => (
                 <li key={i} className={styles.suggestItem}>
                   <span>
-                    {format(slot.start, 'EEEE dd/MM HH:mm')} – {format(slot.end,'HH:mm')}
+                    {format(slot.start, 'EEEE dd/MM HH:mm')} – {format(slot.end, 'HH:mm')}
                   </span>
                   <button
                     className={styles.addButton}
