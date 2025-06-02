@@ -5,19 +5,10 @@
   margin-bottom: 1rem;
 }
 
+/* Dagheaders + tijdlabels */
 .dayHeaderRow {
   display: grid;
   grid-template-columns: 80px repeat(7, 1fr);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 80px repeat(7, 1fr);
-  border: 1px solid #d1d5db;
-}
-
-.timeHeader {
-  background: #f9fafb;
 }
 
 .dayHeader {
@@ -29,6 +20,133 @@
   background: #f3f4f6;
 }
 
+.timeHeader {
+  background: #f9fafb;
+}
+
+.timeLabel {
+  text-align: right;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* De hoofd-grid (weekday × hours) */
+.grid {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  border: 1px solid #d1d5db;
+}
+
+.cell {
+  position: relative;
+  border-top: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  height: 60px;       /* hoog genoeg zodat een balkje opvalt */
+  padding: 0;         /* padding op 0 voor balken die de volledige cell vullen */
+  overflow: hidden;   /* als een balk nét iets groter is, krijgt hij geen scrollbar */
+}
+
+/* ------------ Aangepaste afspraak-styling ----------- */
+/* De gekleurde balkjes (appointments) */
+.appointment {
+  position: absolute;
+  top: 2px;            /* beetje ruimte bovenaan, niet té strak */
+  left: 2px;           /* klein beetje marge links */
+  right: 2px;          /* even klein beetje marge rechts */
+  bottom: 2px;         /* kleine marge onderaan */
+  background-color: #000000; /* fallback-kleur, maar wordt overschreven door inline style */
+  border-radius: 0.25rem;     /* milde ronding op alle hoeken */
+  padding: 2px 4px;    /* binnenruimte, zodat tekst niet tegen de rand zit */
+  font-size: 0.75rem;  /* iets kleinere lettergrootte */
+  color: #000000;      /* altijd witte tekst op de gekleurde achtergrond */
+  display: flex;
+  justify-content: space-between; /* titel links, tijd rechts */
+  align-items: center;
+  font-weight: 900;
+  cursor: pointer;
+  box-sizing: border-box; /* zodat padding én border binnen de cell blijven */
+}
+
+/* Apart label voor titel (tekstueel) */
+.appointmentTitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* als titel te lang is, wordt-ie afgekapt met ... */
+}
+
+/* Apart label voor starttijd (bv. “13:30” rechts uitgelijnd) */
+.appointmentTime {
+  font-weight: 500;
+  margin-left: 4px;   /* kleine spatie tussen titel en tijd */
+  flex-shrink: 0;     /* voorkomt dat de tijd mee kleiner wordt bij heel weinig ruimte */
+}
+
+/* -------------- Overige styling -------------- */
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: left;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.deleteButton {
+  margin-top: 1rem;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.suggestList {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+.suggestItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.addButton {
+  background: #6c63ff;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+/* Oude per-dag-knop (optioneel; je gebruikt hem niet meer) */
 .daySuggestButton {
   position: absolute;
   top: 0.25rem;
@@ -42,81 +160,26 @@
   cursor: pointer;
 }
 
-.timeLabel {
-  text-align: right;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
-}
-
-.cell {
-  border-top: 1px solid #e5e7eb;
-  border-left: 1px solid #e5e7eb;
-  position: relative;
-  height: 60px;
-  padding: 0.25rem;
-}
-
-.appointment {
-  position: absolute;
-  top: 0.25rem;
-  left: 0.25rem;
-  right: 0.25rem;
-  background: #d1d5db;
-  border-radius: 0.375rem;
-  padding: 0.25rem;
-  font-size: 0.75rem;
-  text-align: center;
-  cursor: pointer;
-}
-
-.overlay {
-  position: fixed;
-  top:0; left:0; right:0; bottom:0;
-  background: rgba(0,0,0,0.5);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 100;
-}
-
-.modal {
-  background: white;
-  padding: 1.5rem;
+/* Één enkele Suggestie-knop in de navbar */
+.suggestButton {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #00c896;
+  color: white;
+  border: none;
   border-radius: 0.5rem;
-  width: 90%; max-width: 400px;
-  text-align: left;
-  position: relative;
-}
-
-.closeButton {
-  position: absolute; top:0.5rem; right:0.5rem;
-  background: transparent; border:none; font-size:1.2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.suggestButton:hover {
+  background-color: #00b07e;
 }
 
-.deleteButton {
-  margin-top: 1rem;
-  background: #ff6b6b; color: white;
-  border: none; padding: 0.5rem 1rem;
-  border-radius: 0.25rem; cursor: pointer;
-}
-
-.suggestList {
-  list-style: none;
-  padding: 0;
-}
-
-.suggestItem {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.addButton {
-  background: #6c63ff; color: white;
-  border: none; padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem; cursor: pointer;
-}
-
+/* Optioneel: dropdown om dag te selecteren */
 .daySelector {
   margin-left: 1rem;
   padding: 0.5rem;
@@ -124,28 +187,4 @@
   border-radius: 0.375rem;
   background: white;
   font-size: 0.9rem;
-}
-
-/* Suggestie-knop */
-.suggestButton {
-  margin-left: 1rem;
-  background: #00c896;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-/* Suggestie-modal lijst */
-.suggestList {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0 0;
-}
-.suggestItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
 }

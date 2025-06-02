@@ -48,18 +48,20 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         <button onClick={prev}>← Vorige</button>
         <h2>Week van {format(weekStart, 'dd MMM yyyy')}</h2>
         <button onClick={next}>Volgende →</button>
+        <button
+          className={styles.suggestButton}
+          onClick={() => computeSuggestionsForDay(new Date())}
+        >
+          🎯 Suggestie
+        </button>
       </div>
 
-      {/* Dagheaders + per-dag knop */}
+      {/* Dagheaders (zonder per-dag knoppen) */}
       <div className={styles.dayHeaderRow}>
         <div className={styles.timeHeader}></div>
         {days.map((day,i) => (
           <div key={i} className={styles.dayHeader}>
             {format(day, 'EEEE dd/MM')}
-            <button
-              className={styles.daySuggestButton}
-              onClick={() => computeSuggestionsForDay(day)}
-            >🎯</button>
           </div>
         ))}
       </div>
@@ -80,10 +82,15 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
                   {a && (
                     <div
                       className={styles.appointment}
-                      style={{ background: colorMap[a.color] }}
+                      style={{ backgroundColor: colorMap[a.color] }}
                       onClick={() => setSelected(a)}
                     >
-                      {a.title}
+                      <span className={styles.appointmentTitle}>
+                        {a.title}
+                      </span>
+                      <span className={styles.appointmentTime}>
+                        {format(a.start, 'HH:mm')}
+                      </span>
                     </div>
                   )}
                 </div>
