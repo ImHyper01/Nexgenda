@@ -59,7 +59,6 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
 
   return (
     <div className={styles.wrapper}>
-      {/* ================= NAVIGATIE ================= */}
       <div className={styles.navbar}>
         <button onClick={prev}>← Vorige</button>
         <h2>Week van {format(weekStart, 'dd MMM yyyy')}</h2>
@@ -68,11 +67,10 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
           className={styles.suggestButton}
           onClick={() => computeSuggestionsForDay(new Date())}
         >
-          🎯 Suggestie
+          🎯 Slimme Suggestie
         </button>
       </div>
 
-      {/* ================ DAGHEADERS ================ */}
       <div className={styles.dayHeaderRow}>
         <div className={styles.timeHeader}></div>
         {days.map((day, i) => (
