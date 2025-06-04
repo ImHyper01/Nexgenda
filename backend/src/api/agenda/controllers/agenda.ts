@@ -1,19 +1,23 @@
-// src/api/agenda/controllers/agenda.js
+// backend/src/api/agenda/controllers/agenda.ts
 
-import { openai } from '../../../utils/openai';
 import { parseISO } from 'date-fns';
+import { factories } from '@strapi/strapi';
 
-export default {
-  // Handler voor POST /api/agenda/slimme-voorstel
+interface AppointmentInput {
+  start: string; // ISO-string, bijv. "2025-06-05T10:00:00.000Z"
+  end: string;   // ISO-string, bijv. "2025-06-05T11:00:00.000Z"
+}
+
+export default factories.createCoreController('api::agenda.agenda', ({ strapi }) => ({
+  // Dit is de extra “slimme voorstel”-actie
   async suggest(ctx) {
     try {
-      const body = ctx.request.body;
-
+      const body = ctx.request.body as { appointments?: AppointmentInput[] };
       if (!body.appointments || !Array.isArray(body.appointments)) {
         return ctx.badRequest('Body moet een array "appointments" bevatten.');
       }
 
-      // 1) Format alle binnenkomende afspraken
+      // 1) Format de afspraken voor in het prompt
       const formattedAppointments = body.appointments
         .map((a) => {
           const start = parseISO(a.start);
@@ -22,7 +26,7 @@ export default {
         })
         .join('\n');
 
-      // 2) Bouw het prompt voor OpenAI
+      // 2) Bouw het prompt
       const prompt = `
 Je bent een slimme agenda-assistent. Hieronder staan de huidige afspraken in de komende week:
 
@@ -35,23 +39,26 @@ Geef een lijst van 3 voorgestelde vrije blokken van 1 uur binnen de komende 7 da
 - Geef precies 3 regels, één voorstel per regel.
       `.trim();
 
-      // 3) Roep OpenAI v4 API aan
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: 'Je bent een agenda assistent.' },
-          { role: 'user', content: prompt },
-        ],
-        temperature: 0.7,
-        max_tokens: 200,
-      });
+      // 3) Roep OpenAI aan (vervang door jouw werkende service)
+      const completion = await strapi
+        .plugin('openai')              // zorg dat je in Strapi-plugin “openai” hebt geregistreerd
+        .service('openaiService')      // service‐naam in je Strapi-plugin
+        .createChatCompletion({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: 'Je bent een agenda assistent.' },
+            { role: 'user', content: prompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 200,
+        });
 
       const aiText = completion.choices?.[0]?.message?.content;
       if (!aiText) {
         return ctx.internalServerError('Geen respons van AI ontvangen.');
       }
 
-      // 4) Parse de AI-uitvoer naar een array met objecten
+      // 4) Parse AI-antwoord
       const lines = aiText
         .split('\n')
         .map((l) => l.trim())
@@ -70,19 +77,19 @@ Geef een lijst van 3 voorgestelde vrije blokken van 1 uur binnen de komende 7 da
         const endDate = new Date(year, month - 1, day, endHour, endMin);
 
         return {
-          id: startDate.toISOString(),
+          id:    startDate.toISOString(),
           title: 'Voorstel',
           start: startDate.toISOString(),
-          end: endDate.toISOString(),
+          end:   endDate.toISOString(),
           color: 'blue',
         };
       }).filter((s) => s !== null);
 
-      // 5) Return de suggesties naar de frontend
+      // 5) Return de suggesties
       ctx.body = { data: suggestions };
     } catch (err) {
       console.error('Error in agenda.suggest:', err);
       ctx.internalServerError('Er is iets misgegaan in de AI-aanroep.');
     }
-  },
-};
+  }
+}));

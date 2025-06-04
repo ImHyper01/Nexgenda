@@ -1,21 +1,12 @@
+// src/data/actions/auth-actions.ts
+
 "use server";
+
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { registerUserService, loginUserService } from "@/data/services/auth-service";
 
-import {
-  registerUserService,
-  loginUserService,
-} from "@/data/services/auth-service";
-
-const config = {
-  maxAge: 60 * 60 * 24 * 7, // 1 week
-  path: "/",
-  domain: process.env.HOST ?? "localhost",
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-};
-
+// Schema voor registratie (gebruiken we wel, ter illustratie)
 const schemaRegister = z.object({
   username: z.string().min(3).max(20, {
     message: "Username must be between 3 and 20 characters",
@@ -64,19 +55,25 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     };
   }
 
-  const cookieStore = await cookies();
-  cookieStore.set("jwt", responseData.jwt, config);
-  
-  redirect("/dashboard");
+  // Óók bij registratie geef je de JWT aan de client terug (in data), mocht je dat willen:
+  return {
+    ...prevState,
+    zodErrors: null,
+    strapiErrors: null,
+    data: { jwt: responseData.jwt, user: responseData.user },
+    message: "Registration succeeded!",
+  };
 }
 
+
+// Schema voor login
 const schemaLogin = z.object({
   identifier: z
     .string()
     .min(3, {
       message: "Identifier must have at least 3 or more characters",
     })
-    .max(20, {
+    .max(50, {
       message: "Please enter a valid username or email address",
     }),
   password: z
@@ -90,6 +87,7 @@ const schemaLogin = z.object({
 });
 
 export async function loginUserAction(prevState: any, formData: FormData) {
+  // 1) Valideer de invoer met Zod
   const validatedFields = schemaLogin.safeParse({
     identifier: formData.get("identifier"),
     password: formData.get("password"),
@@ -99,40 +97,54 @@ export async function loginUserAction(prevState: any, formData: FormData) {
     return {
       ...prevState,
       zodErrors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Login.",
+      strapiErrors: null,
+      data: null,
+      message: "Vul zowel e-mail/gebruikersnaam als wachtwoord correct in.",
     };
   }
 
-  const responseData = await loginUserService(validatedFields.data);
+  const { identifier, password } = validatedFields.data;
+
+  // 2) Vraag loginUserService aan (die een POST naar Strapi /api/auth/local stuurt)
+  const responseData = await loginUserService({ identifier, password });
 
   if (!responseData) {
+    // Geen respons of network error
     return {
       ...prevState,
-      strapiErrors: responseData.error,
+      strapiErrors: null,
       zodErrors: null,
-      message: "Ops! Something went wrong. Please try again.",
+      data: null,
+      message: "Er ging iets mis. Probeer opnieuw.",
     };
   }
 
   if (responseData.error) {
+    // Strapi gaf een foutmelding terug (bv. onjuiste inloggegevens)
     return {
       ...prevState,
       strapiErrors: responseData.error,
       zodErrors: null,
-      message: "Failed to Login.",
+      data: null,
+      message: null,
     };
   }
 
-  console.log(responseData, "responseData");
-
-  const cookieStore = await cookies();
-  cookieStore.set("jwt", responseData.jwt, config);
-
-  redirect("/dashboard");
+  // 3) Succes: Strapi gaf { jwt, user } terug
+  // Return de JWT én user-spullen in data, zodat de client ze kan gebruiken
+  return {
+    ...prevState,
+    zodErrors: null,
+    strapiErrors: null,
+    data: { jwt: responseData.jwt, user: responseData.user },
+    message: "Inloggen geslaagd!",
+  };
 }
 
+
+// Optioneel: logoutAction laat je een lege JWT-teruggeve en redirect naar home
 export async function logoutAction() {
-  const cookieStore = await cookies();
-  cookieStore.set("jwt", "", { ...config, maxAge: 0 });
+  // Hier zou je op client‐niveau de JWT uit localStorage verwijderenen
+  // Maar omdat dit een server‐action is, redirecten we gewoon naar "/"
   redirect("/");
 }

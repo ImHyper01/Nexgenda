@@ -1,0 +1,17 @@
+{
+  "collectionName": "agendas",
+  "info": {
+    "singularName": "agenda",
+    "pluralName": "agendas",
+    "displayName": "Agenda"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": { "type": "string" },
+    "start": { "type": "datetime" },
+    "end": { "type": "datetime" },
+    "color": { "type": "string" }
+  }
+}

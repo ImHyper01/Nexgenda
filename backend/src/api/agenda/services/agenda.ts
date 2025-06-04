@@ -1,27 +1,23 @@
-// src/api/agenda/services/agenda.js
+// src/api/agenda/services/agenda.ts
 
-import { openai } from '../../../utils/openai';
 import { parseISO } from 'date-fns';
 
+interface AppointmentInput {
+  start: string;
+  end: string;
+}
+
 export default {
-  /**
-   * Geeft 3 slimme tijdsblokken (van 1 uur) voorgesteld door OpenAI,
-   * op basis van een lijst van bestaande afspraken.
-   *
-   * @param {Array<{ start: string, end: string }>} appointments
-   * @returns {Promise<Array<{ id: string, title: string, start: string, end: string, color: string }>>}
-   */
-  async getSmartSuggestions(appointments) {
-    // 1) Format de binnenkomende afspraken voor in het prompt
+  async getSmartSuggestions(appointments: AppointmentInput[]) {
+    // precies dezelfde logica als in controller.suggest
     const formattedAppointments = appointments
       .map((a) => {
         const start = parseISO(a.start);
-        const end = parseISO(a.end);
+        const end   = parseISO(a.end);
         return `- ${start.toLocaleDateString('nl-NL')} ${start.toLocaleTimeString('nl-NL')} tot ${end.toLocaleTimeString('nl-NL')}`;
       })
       .join('\n');
 
-    // 2) Bouw het prompt
     const prompt = `
 Je bent een slimme agenda‐assistent. Hieronder staan de huidige afspraken in de komende week:
 
@@ -34,30 +30,30 @@ Geef 3 voorstellen voor vrije blokken van 1 uur binnen de komende 7 dagen (maand
 - Geef exact 3 regels, één voorstel per regel.
     `.trim();
 
-    // 3) Roep OpenAI v4 aan met de juiste methode
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        { role: 'system', content: 'Je bent een agenda assistent.' },
-        { role: 'user', content: prompt },
-      ],
-      temperature: 0.7,
-      max_tokens: 200,
-    });
+    const { choices } = await strapi
+      .plugin('openai')
+      .service('openaiService')
+      .createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'Je bent een agenda assistent.' },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 200,
+      });
 
-    const aiText = completion.choices?.[0]?.message?.content;
+    const aiText = choices?.[0]?.message?.content;
     if (!aiText) {
       throw new Error('Geen respons van AI ontvangen.');
     }
 
-    // 4) Parse de AI-uitvoer naar een array met objecten
     const lines = aiText
       .split('\n')
       .map((l) => l.trim())
       .filter((l) => l.length > 0);
 
     const suggestions = lines.slice(0, 3).map((line) => {
-      // Regex verwacht: "DD-MM-YYYY HH:MM - HH:MM"
       const match = line.match(/(\d{2}-\d{2}-\d{4}) (\d{2}:\d{2}) - (\d{2}:\d{2})/);
       if (!match) return null;
       const [_, datePart, startTime, endTime] = match;
@@ -78,5 +74,5 @@ Geef 3 voorstellen voor vrije blokken van 1 uur binnen de komende 7 dagen (maand
     }).filter((s) => s !== null);
 
     return suggestions;
-  },
+  }
 };

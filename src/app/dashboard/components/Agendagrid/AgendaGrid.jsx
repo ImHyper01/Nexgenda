@@ -1,4 +1,6 @@
-// src/components/AgendaGrid.jsx
+// src/app/dashboard/components/Agendagrid/AgendaGrid.jsx
+
+'use client';
 
 import React, { useState } from 'react';
 import axios from 'axios';
@@ -10,10 +12,11 @@ import {
   isWithinInterval,
   differenceInHours
 } from 'date-fns';
-import styles from './style.module.scss'; // ga ervan uit dat je CSS/SCSS-laag op orde is
+import styles from './style.module.scss'; // Controleer dat deze SCSS‐module bestaat
 
-// Uren-periode die je in de grid toont (8:00–18:00 is hier 8 t/m 17, dus 10 uur)
+// We tonen de uren van 8:00 tot 18:00 (8 t/m 17 = 10 rijen)
 const hours = Array.from({ length: 10 }, (_, i) => 8 + i);
+
 const colorMap = {
   red:    '#f87171',
   yellow: '#facc15',
@@ -30,20 +33,19 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  const prev = () => setWeekStart((d) => addDays(d, -7));
-  const next = () => setWeekStart((d) => addDays(d, 7));
+  const prev = () => setWeekStart(d => addDays(d, -7));
+  const next = () => setWeekStart(d => addDays(d, 7));
 
-  // =========================
-  // Vervang hier je lokale "computeSuggestionsForDay" door een call naar Strapi v5
-  // =========================
+  // ==================================
+  // Functie om slimme voorstellen op te halen
+  // ==================================
   const computeSuggestionsForDay = async (day) => {
     try {
-      // 1) Bepaal het begin en einde van de week (maandag t/m zondag) waarin 'day' valt
+      // 1) Bepaal begin en einde van de week
       const weekStartDate = startOfWeek(day, { weekStartsOn: 1 });
       const weekEndDate = addDays(weekStartDate, 6);
 
-      // 2) Filter alle bestaande afspraken (props) die binnen die week vallen
-      //    en zet ze om naar ISO-strings zoals de backend dat verwacht.
+      // 2) Filter bestaande afspraken binnen die week en zet om naar ISO‐strings
       const appointmentsThisWeek = appointments
         .filter((a) =>
           isWithinInterval(a.start, { start: weekStartDate, end: weekEndDate })
@@ -53,14 +55,21 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
           end:   a.end.toISOString(),
         }));
 
-      // 3) Doe de POST-aanroep naar Strapi v5 endpoint
-      //    Vervang hieronder ’http://localhost:1337’ door jouw Strapi-url + poort
+      // 3) POST-aanroep naar Strapi endpoint
+      //    Let op: omdat je route nu op “/agenda/slimme-voorstel” staat (zonder /api),
+      //    gebruik je exact dat pad. MetCredentials:true om de JWT-cookie door te geven.
       const response = await axios.post(
-        'http://localhost:1337/api/agenda/slimme-voorstel',
-        { appointments: appointmentsThisWeek }
+        'http://localhost:1337/agenda/slimme-voorstel',
+        { appointments: appointmentsThisWeek },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
 
-      // 4) Parse de respons (array met { id, title, start, end, color })
+      // 4) Parse de respons (Strapi retourneert data.data = array met { id, title, start, end, color })
       const suggestionsFromApi = response.data.data.map((s) => ({
         id:    s.id,
         title: s.title,
@@ -72,8 +81,18 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
       setSuggestions(suggestionsFromApi);
       setShowSuggestModal(true);
     } catch (err) {
-      console.error('Fout bij ophalen slimme voorstellen:', err);
-      alert('Kon geen slimme voorstellen ophalen. Kijk in de serverlogs voor details.');
+      // Tref meer gedetailleerde logging:
+      if (err.response) {
+        console.error(
+          'Strapi returned status',
+          err.response.status,
+          'with data:',
+          err.response.data
+        );
+      } else {
+        console.error(err);
+      }
+      alert('Kon geen slimme voorstellen ophalen. Zie console voor details.');
     }
   };
 
@@ -103,13 +122,12 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
       {/* ================== GRID =================== */}
       <div className={styles.grid}>
         {/*
-          1) Eerst renderen we elk tijd-label + lege cellen.
-             We geven expliciet gridColumn en gridRow mee per element,
-             zodat de tijd-label altijd exact in de eerste kolom links staat.
+          1) Render elk tijd‐label + lege cellen (10 rijen × 7 kolommen).
+             gridColumn 1 is tijd‐label; gridColumn 2 t/m 8 zijn de dagen.
         */}
         {hours.map((hour, rowIndex) => (
           <React.Fragment key={hour}>
-            {/* 1e kolom: het tijd-label */}
+            {/* Tijd‐label in de eerste kolom */}
             <div
               className={styles.timeLabel}
               style={{
@@ -120,14 +138,14 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
               {hour}:00
             </div>
 
-            {/* kolom 2 t/m 8: lege cellen (één per dag) */}
+            {/* Kolom 2 t/m 8: lege cellen */}
             {days.map((day, colIndex) => (
               <div
                 key={`${colIndex}-${hour}`}
                 className={styles.cell}
                 style={{
-                  gridColumn: colIndex + 2, // kolom 2 = maandag, 3 = dinsdag, etc.
-                  gridRow:    rowIndex + 1   //zelfde rij als het tijd-label
+                  gridColumn: colIndex + 2,
+                  gridRow:    rowIndex + 1
                 }}
               />
             ))}
@@ -135,9 +153,8 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         ))}
 
         {/*
-          2) Render alle bestaande afspraken als balken.
-             We zetten expliciet gridColumn en gridRow, zodat
-             een meer-uur-afspraak één div blijft, met span van x rijen.
+          2) Render alle bestaande afspraken als balken:
+             Bereken gridColumn + gridRow/span aan de hand van het uur en de duur.
         */}
         {appointments.map((a) => {
           const dayIdx = days.findIndex((d) => isSameDay(d, a.start));
@@ -146,8 +163,7 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
           const startHour = a.start.getHours();
           const endHour   = a.end.getHours();
           let duur = differenceInHours(a.end, a.start);
-          if (duur < 1) duur = 1; // minstens 1 uur
-
+          if (duur < 1) duur = 1;
           const rowStart = (startHour - 8) + 1;
 
           return (
@@ -161,9 +177,7 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
                 backgroundColor: colorMap[a.color] || '#d1d5db'
               }}
             >
-              <span className={styles.appointmentTitle}>
-                {a.title}
-              </span>
+              <span className={styles.appointmentTitle}>{a.title}</span>
               <span className={styles.appointmentTime}>
                 {format(a.start, 'HH:mm')}
               </span>
@@ -174,14 +188,8 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
 
       {/* =============== DETAIL‐MODAL =============== */}
       {selected && (
-        <div
-          className={styles.overlay}
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className={styles.modal}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className={styles.overlay} onClick={() => setSelected(null)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <button
               className={styles.closeButton}
               onClick={() => setSelected(null)}
@@ -208,14 +216,8 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
 
       {/* ============= SUGGESTIE‐MODAL ============= */}
       {showSuggestModal && (
-        <div
-          className={styles.overlay}
-          onClick={() => setShowSuggestModal(false)}
-        >
-          <div
-            className={styles.modal}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className={styles.overlay} onClick={() => setShowSuggestModal(false)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <button
               className={styles.closeButton}
               onClick={() => setShowSuggestModal(false)}
