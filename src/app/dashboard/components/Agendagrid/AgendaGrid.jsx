@@ -1,16 +1,18 @@
-'use client';
+// src/components/AgendaGrid.jsx
+
 import React, { useState } from 'react';
-import styles from './style.module.scss';
+import axios from 'axios';
 import {
   startOfWeek,
   addDays,
   format,
-  setHours,
   isSameDay,
   isWithinInterval,
   differenceInHours
 } from 'date-fns';
+import styles from './style.module.scss'; // ga ervan uit dat je CSS/SCSS-laag op orde is
 
+// Uren-periode die je in de grid toont (8:00–18:00 is hier 8 t/m 17, dus 10 uur)
 const hours = Array.from({ length: 10 }, (_, i) => 8 + i);
 const colorMap = {
   red:    '#f87171',
@@ -28,33 +30,51 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
   const [showSuggestModal, setShowSuggestModal] = useState(false);
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  const prev = () => setWeekStart(d => addDays(d, -7));
-  const next = () => setWeekStart(d => addDays(d,  7));
+  const prev = () => setWeekStart((d) => addDays(d, -7));
+  const next = () => setWeekStart((d) => addDays(d, 7));
 
-  const computeSuggestionsForDay = day => {
-    const free = [];
-    hours.forEach(hour => {
-      const s = setHours(day, hour);
-      const e = setHours(day, hour + 1);
-      const overlap = appointments.some(a =>
-        isSameDay(a.start, day) &&
-        (
-          isWithinInterval(s, { start: a.start, end: a.end }) ||
-          isWithinInterval(e, { start: a.start, end: a.end })
+  // =========================
+  // Vervang hier je lokale "computeSuggestionsForDay" door een call naar Strapi v5
+  // =========================
+  const computeSuggestionsForDay = async (day) => {
+    try {
+      // 1) Bepaal het begin en einde van de week (maandag t/m zondag) waarin 'day' valt
+      const weekStartDate = startOfWeek(day, { weekStartsOn: 1 });
+      const weekEndDate = addDays(weekStartDate, 6);
+
+      // 2) Filter alle bestaande afspraken (props) die binnen die week vallen
+      //    en zet ze om naar ISO-strings zoals de backend dat verwacht.
+      const appointmentsThisWeek = appointments
+        .filter((a) =>
+          isWithinInterval(a.start, { start: weekStartDate, end: weekEndDate })
         )
+        .map((a) => ({
+          start: a.start.toISOString(),
+          end:   a.end.toISOString(),
+        }));
+
+      // 3) Doe de POST-aanroep naar Strapi v5 endpoint
+      //    Vervang hieronder ’http://localhost:1337’ door jouw Strapi-url + poort
+      const response = await axios.post(
+        'http://localhost:1337/api/agenda/slimme-voorstel',
+        { appointments: appointmentsThisWeek }
       );
-      if (!overlap) {
-        free.push({
-          id:    `${day.toISOString()}-${hour}`,
-          title: 'Voorstel',
-          start: s,
-          end:   e,
-          color: 'blue'
-        });
-      }
-    });
-    setSuggestions(free.slice(0, 3));
-    setShowSuggestModal(true);
+
+      // 4) Parse de respons (array met { id, title, start, end, color })
+      const suggestionsFromApi = response.data.data.map((s) => ({
+        id:    s.id,
+        title: s.title,
+        start: new Date(s.start),
+        end:   new Date(s.end),
+        color: s.color,
+      }));
+
+      setSuggestions(suggestionsFromApi);
+      setShowSuggestModal(true);
+    } catch (err) {
+      console.error('Fout bij ophalen slimme voorstellen:', err);
+      alert('Kon geen slimme voorstellen ophalen. Kijk in de serverlogs voor details.');
+    }
   };
 
   return (
@@ -83,7 +103,7 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
       {/* ================== GRID =================== */}
       <div className={styles.grid}>
         {/*
-          1) Eerst renderen we ELKE tijd-label + de lege cellen.
+          1) Eerst renderen we elk tijd-label + lege cellen.
              We geven expliciet gridColumn en gridRow mee per element,
              zodat de tijd-label altijd exact in de eerste kolom links staat.
         */}
@@ -106,8 +126,8 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
                 key={`${colIndex}-${hour}`}
                 className={styles.cell}
                 style={{
-                  gridColumn: colIndex + 2,       // kolom 2 = maandag, 3 = dinsdag, etc.
-                  gridRow:    rowIndex + 1        // dezelfde rij als het tijd-label
+                  gridColumn: colIndex + 2, // kolom 2 = maandag, 3 = dinsdag, etc.
+                  gridRow:    rowIndex + 1   //zelfde rij als het tijd-label
                 }}
               />
             ))}
@@ -115,22 +135,19 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         ))}
 
         {/*
-          2) Render alle afspraken als AANEENGESLOTEN balken.
+          2) Render alle bestaande afspraken als balken.
              We zetten expliciet gridColumn en gridRow, zodat
-             een meer-uur-afspraak 1 div blijft, met span van x rijen.
+             een meer-uur-afspraak één div blijft, met span van x rijen.
         */}
-        {appointments.map(a => {
-          // Op welke dag (index 0..6) valt deze afspraak?
-          const dayIdx = days.findIndex(d => isSameDay(d, a.start));
+        {appointments.map((a) => {
+          const dayIdx = days.findIndex((d) => isSameDay(d, a.start));
           if (dayIdx === -1) return null;
 
-          // Bereken startuur en duur in hele uren
           const startHour = a.start.getHours();
           const endHour   = a.end.getHours();
           let duur = differenceInHours(a.end, a.start);
           if (duur < 1) duur = 1; // minstens 1 uur
 
-          // Reken om naar grid-rij: rij 1 = 8:00–9:00, rij 2 = 9:00–10:00, etc.
           const rowStart = (startHour - 8) + 1;
 
           return (
@@ -139,8 +156,8 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
               className={styles.appointment}
               onClick={() => setSelected(a)}
               style={{
-                gridColumn:     dayIdx + 2,               // 2 = maandag, 3 = dinsdag, ...
-                gridRow:        `${rowStart} / span ${duur}`,
+                gridColumn:      dayIdx + 2,
+                gridRow:         `${rowStart} / span ${duur}`,
                 backgroundColor: colorMap[a.color] || '#d1d5db'
               }}
             >
@@ -157,8 +174,14 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
 
       {/* =============== DETAIL‐MODAL =============== */}
       {selected && (
-        <div className={styles.overlay} onClick={() => setSelected(null)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <div
+          className={styles.overlay}
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className={styles.modal}
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className={styles.closeButton}
               onClick={() => setSelected(null)}
@@ -185,8 +208,14 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
 
       {/* ============= SUGGESTIE‐MODAL ============= */}
       {showSuggestModal && (
-        <div className={styles.overlay} onClick={() => setShowSuggestModal(false)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <div
+          className={styles.overlay}
+          onClick={() => setShowSuggestModal(false)}
+        >
+          <div
+            className={styles.modal}
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className={styles.closeButton}
               onClick={() => setShowSuggestModal(false)}
