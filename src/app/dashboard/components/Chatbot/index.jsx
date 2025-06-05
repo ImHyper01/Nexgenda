@@ -1,3 +1,4 @@
+//src/app/dashboard/components/chatbot/index.jsx
 'use client';
 import React, { useState } from 'react';
 import styles from './style.module.scss';
@@ -23,14 +24,14 @@ export default function Chatbot() {
     const messageText = text !== undefined ? text : input.trim();
     if (!messageText) return;
     if (text === undefined) setInput('');
-
+  
     const newMessages = [
       ...messages,
       { message: messageText, sender: 'user' }
     ];
     setMessages(newMessages);
     setTyping(true);
-
+  
     try {
       const res = await fetch('http://localhost:1337/api/chat/send', {
         method: 'POST',
@@ -38,7 +39,28 @@ export default function Chatbot() {
         body: JSON.stringify({ question: messageText })
       });
       const { answer } = await res.json();
-
+  
+      // Probeer JSON te parsen
+      try {
+        const parsed = JSON.parse(answer);
+        if (parsed?.title && parsed?.date && parsed?.time && parsed?.duration_minutes) {
+          const datetime = `${parsed.date}T${parsed.time}`;
+          const url = new URL(window.location.origin + '/dashboard');
+          const end = new Date(datetime);
+          end.setMinutes(end.getMinutes() + parsed.duration_minutes);
+  
+          url.searchParams.set('title', parsed.title);
+          url.searchParams.set('start', new Date(datetime).toISOString());
+          url.searchParams.set('end', end.toISOString());
+          url.searchParams.set('color', 'blue');
+  
+          window.location.href = url.toString();
+          return;
+        }
+      } catch (e) {
+        // Geen geldige JSON: behandel als normaal bericht
+      }
+  
       setMessages([
         ...newMessages,
         { message: answer, sender: 'bot' }
@@ -53,7 +75,7 @@ export default function Chatbot() {
       setTyping(false);
     }
   };
-
+  
   const onKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();

@@ -1,3 +1,4 @@
+//src/app/dashboard/components/sidebar/index.jsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
