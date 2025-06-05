@@ -258,13 +258,13 @@ export default function Sidebar({ activeAppointment, onCloseActive }) {
           </button>
         </div>
 
-        <div className={styles.notificationBox}>
+        {/* <div className={styles.notificationBox}>
           <p className={styles.notificationTitle}>Real time melding</p>
           <div className={styles.messageBox}>
             Je hebt {unreadMails} nieuwe mail{unreadMails > 1 ? 's' : ''}
           </div>
           <button className={styles.addButton}>Add</button>
-        </div>
+        </div> */}
 
         <div className={styles.aiHelp}>
           <button className={styles.helpButton} onClick={toggleChat}>
