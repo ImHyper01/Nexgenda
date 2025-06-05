@@ -14,7 +14,7 @@ export default function Landing() {
                     Streamline Your <br /> Schedule with Our <br /> All-in-One Tool
                 </h1>
                 <p className={styles.description}>
-                    Experience the ultimate productivity boost with our innovative tool that combines your calendar, deadlines, and to-do list into a single, user-friendly platform. Our AI feature intelligently organizes your tasks, ensuring you never miss a deadline again.
+                    Experience the ultimate productivity boost with our innovative tool that combines your calendar, deadlines, and to-do list into a single, user-friendly platform. Our AI named Nexi feature intelligently organizes your tasks, ensuring you never miss a deadline again.
                 </p>
                 <div className={styles.buttons}>
                     <button className={styles.primary}>Learn More</button>

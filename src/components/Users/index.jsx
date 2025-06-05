@@ -10,7 +10,7 @@ export default function Users() {
             <div className={styles.wrapper}>
             <div className={styles.section1}>
                 <h4 className={styles.h4}>
-                    “Vision Flow completely changed how I manage my week.”
+                    “Nexgenda completely changed how I manage my week.”
                 </h4>
                 <p className={styles.p}>
                     The AI suggestions are surprisingly accurate, and the smart planning helps me save hours every week. I can’t imagine working without it anymore.
@@ -27,7 +27,7 @@ export default function Users() {
                     “Perfect for our remote team.”
                 </h4>
                 <p className={styles.p}>
-                    With shared tasks and detailed overviews, Vision Flow helps us stay aligned across time zones. It's become essential to how we operate.
+                    With shared tasks and detailed overviews, Nexgenda helps us stay aligned across time zones. It's become essential to how we operate.
                 </p>
                 <div className={styles.pfc}>
                     <img className={styles.img} src="https://randomuser.me/api/portraits/men/35.jpg" alt="James Carter"/>
@@ -41,25 +41,25 @@ export default function Users() {
                     “I’ve tried dozens of planners—this one actually sticks.”
                 </h4>
                 <p className={styles.p}>
-                    Vision Flow strikes the perfect balance between structure and flexibility. The clean UI and calendar integration are just brilliant.
+                    Nexgenda strikes the perfect balance between structure and flexibility. The clean UI and calendar integration are just brilliant.
                 </p>
                 <div className={styles.pfc}>
-                    <img className={styles.img} src="https://randomuser.me/api/portraits/men/22.jpg" alt="Leo Nguyen"/>
-                    <p className={styles.h6}>Leo Nguyen</p>
+                    <img className={styles.img} src="https://randomuser.me/api/portraits/men/81.jpg" alt="Patrick Williams"/>
+                    <p className={styles.h6}>Patrick Williams</p>
                     <p className={styles.h62}>Freelance Designer</p>
                 </div>
             </div>
 
             <div className={styles.section4}>
                 <h4 className={styles.h4}>
-                    “Vision Flow feels like it was made for busy founders.”
+                    “Nexgenda feels like it was made for busy founders.”
                 </h4>
                 <p className={styles.p}>
                     Between investor calls, product planning, and team syncs, this tool keeps me sane. I love how I can visualize my week at a glance.
                 </p>
                 <div className={styles.pfc}>
-                    <img className={styles.img} src="https://randomuser.me/api/portraits/women/65.jpg" alt="Anita Gomez"/>
-                    <p className={styles.h6}>Anita Gomez</p>
+                    <img className={styles.img} src="https://randomuser.me/api/portraits/women/65.jpg" alt="Anita Wyck"/>
+                    <p className={styles.h6}>Anita Wyck</p>
                     <p className={styles.h62}>Startup Founder</p>
                 </div>
             </div>

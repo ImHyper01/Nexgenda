@@ -12,19 +12,19 @@ export default function Footer() {
                         <img src="./VisionFlowLogo.png" alt="logo" />
                     </div>
                     <p>
-                        info@nexengda.com<br />
+                        info@nexgenda.com<br />
                        0800-123123<br />
-                        Rotterdam, 2021KP
+                        Rotterdam, 2074EP
                     </p>
                 </div>
 
                 <div className={styles.section}>
                     <h4>EXPLORE</h4>
                     <ul>
-                        <li>consectet cupidatat</li>
-                        <li>exercitation ullamco</li>
-                        <li>fugiat nulla</li>
-                        <li>dolore magna</li>
+                        <li>Planner</li>
+                        <li>Nexi</li>
+                        <li>Tech stack</li>
+                        <li>Sign Up</li>
                     </ul>
                 </div>
 
@@ -43,8 +43,8 @@ export default function Footer() {
                     <ul>
                         <li>Who made it</li>
                         <li>The Idea</li>
-                        <li>ultricies orci sagittis</li>
-                        <li>adipiscing</li>
+                        <li>Meet Nexi</li>
+                        <li>The Team</li>
                     </ul>
                 </div>
             </div>

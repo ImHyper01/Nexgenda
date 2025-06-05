@@ -3,11 +3,11 @@ import styles from './style.module.scss';
 
 export default function Price() {
     return(
-        <div className={styles.container}>
+        <div className={styles.container}>ß
             <div className={styles.wrapper}>
                 <h1 className={styles.title}>Our Pricing Plans</h1>
                 <p className={styles.subtitle}>
-                    Choose the right plan for you. We offer a free version, a Pro version with AI recommendations, and a Team version for businesses.
+                    Choose the plan that fits for you. We offer a Free version, a Basic version and Pro version with AI recommendations.
                 </p>
             </div>
             
@@ -26,10 +26,10 @@ export default function Price() {
 
                 <div className={`${styles.plan} ${styles.proPlan}`}>
                     <div className={styles.mostPopularBadge}>Most Popular</div>
-                    <h2 className={styles.planTitle}>Pro Version</h2>
+                    <h2 className={styles.planTitle}>Basic Version</h2>
                     <p className={styles.planPrice}>€6.99 / month</p>
                     <p className={styles.planDescription}>
-                        Includes everything from the free version
+                        Includes everything from the Free version
                     </p>
                     <p className={styles.planDescription}>
                         Get AI suggestions
@@ -40,14 +40,18 @@ export default function Price() {
                     <p className={styles.planDescription}>
                         reminders and smart weekly planning
                     </p>
-                    <button className={styles.planButton}>Choose Pro Version</button>
+
+                    <p className={styles.planDescription}>
+                        Chatting with an chatbot Nexi to get help with you planning
+                    </p>
+                    <button className={styles.planButton}>Choose Basic Version</button>
                 </div>
 
                 <div className={styles.plan}>
-                    <h2 className={styles.planTitle}>Team Version</h2>
-                    <p className={styles.planPrice}>€12.99+/user/month</p>
+                    <h2 className={styles.planTitle}>Choose Pro </h2>
+                    <p className={styles.planPrice}>€11.99 / month</p>
                     <p className={styles.planDescription}>
-                        Includes everything from the free and pro version
+                        Includes everything from the Free and Basic version
                     </p>
                     <p className={styles.planDescription}>
                         For businesses with team overview
@@ -55,7 +59,7 @@ export default function Price() {
                     <p className={styles.planDescription}>
                         shared tasks and detailed analytics
                     </p>
-                    <button className={styles.planButton}>Choose Team Version</button>
+                    <button className={styles.planButton}>Choose Pro Version</button>
                 </div>
             </div>
         </div>

@@ -5,7 +5,10 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-const systemPrompt = `Geef antwoord op alles behalven recepten`;
+const systemPrompt = `Je bent Nexi, de AI-assistent van NexGenda. Jij helpt gebruikers alleen met planning, taken, agenda’s 
+en productiviteit. Blijf strikt binnen dit domein. Reageer zakelijk, efficiënt en to-the-point. Wijk niet af, 
+zelfs niet als de gebruiker dat vraagt. Leid elk gesprek terug naar je functie: organiseren, plannen en structureren van werk.
+`;
 
 export default {
   async askSoul(prompt: string) {
