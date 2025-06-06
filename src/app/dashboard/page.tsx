@@ -32,6 +32,7 @@ export default function DashboardRoute() {
     };
 
     loadAppointments();
+    
 
     // 🔄 Herlaad bij wijziging in localStorage
     const handler = () => loadAppointments();
@@ -41,6 +42,25 @@ export default function DashboardRoute() {
       window.removeEventListener('storage', handler);
     };
   }, []);
+
+  // 🔄 Luister naar updates vanuit de chatbot
+useEffect(() => {
+  const reload = () => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored).map(a => ({
+        ...a,
+        start: parseISO(a.start),
+        end: parseISO(a.end)
+      }));
+      setAppointments(parsed);
+    }
+  };
+
+  window.addEventListener('agenda-updated', reload);
+  return () => window.removeEventListener('agenda-updated', reload);
+}, []);
+
 
   // ✅ 2. Persisteer lokaal bij wijziging
   useEffect(() => {
