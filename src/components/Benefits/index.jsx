@@ -27,7 +27,7 @@ export default function Benefits() {
                 </div>
 
                 <div className={styles.imageContainer}>
-                    <img src="/opimg/mockupfu.jpg" alt="Tool Preview" />
+                    <img src="/opimg/mockupfu.png" alt="Tool Preview" />
                 </div>
 
                 <div className={styles.item}>

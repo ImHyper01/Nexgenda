@@ -82,9 +82,9 @@ export function SignupForm() {
           </CardFooter>
         </Card>
         <div className="mt-4 text-center text-sm">
-          Have an account?
+          Heb je al een account?
           <Link className="underline ml-2" href="signIn">
-            Sing In
+            Log In
           </Link>
         </div>
       </form>

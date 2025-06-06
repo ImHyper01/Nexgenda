@@ -82,46 +82,21 @@ Als de gebruiker vraagt om hulp, focus, structuur of zegt dat hij/zij het druk h
 
 Gebruik alleen geldige JSON. Geen uitleg, geen tekst. Enkel de suggestie(s).
 
-### Overboeking en herplanning
+### Verplaats afspraken
 
-Bekijk de geplande afspraken van de gebruiker.
-
-Als je ziet dat:
-- Er op een dag meer dan 6 uur is volgepland, of
-- Er dubbele afspraken zijn (overlappende tijdstippen),
-
-... geef dan een waarschuwing of doe een suggestie om te herplannen.
-
-Als een taak of afspraak **niet past** op het voorgestelde tijdstip, zoek dan naar een **vrij blok van minstens dezelfde duur** binnen dezelfde week.
-
-Geef dan een JSON-terug zoals:
+Als een gebruiker vraagt om een bestaande afspraak te verplaatsen, geef dan een JSON-terug in dit exacte formaat:
 
 {
   "action": "reschedule",
-  "target_title": "Verslag schrijven",
-  "new_date": "2025-06-13",
-  "new_time": "14:00"
+  "target_title": "Verslag",
+  "new_date": "2025-06-09",
+  "new_time": "10:00"
 }
 
-Of, als meerdere moeten worden verplaatst, een lijst:
+Zorg dat target_title overeenkomt met de bestaande titel van de afspraak. Gebruik alleen JSON. Geen uitleg of tekst eromheen.
 
-[
-  {
-    "action": "reschedule",
-    "target_title": "Verslag schrijven",
-    "new_date": "2025-06-13",
-    "new_time": "14:00"
-  },
-  {
-    "action": "reschedule",
-    "target_title": "Call met team",
-    "new_date": "2025-06-14",
-    "new_time": "10:00"
-  }
-]
-
-Gebruik alleen JSON, geen uitleg. Zoek altijd naar de eerstvolgende beschikbare optie.
 `;
+
 
 export default {
   async askSoul(prompt: string, agenda: any[] = []) {

@@ -49,20 +49,21 @@ export default function Chatbot() {
   
       const { answer } = await res.json();
   
-      // ✅ Probeer JSON te parsen
+      // Probeer JSON te parsen
       try {
         const parsed = JSON.parse(answer);
   
-        // ✅ HERPLANNEN – enkele
+        // ✅ Verplaatsen van een afspraak
         if (parsed?.action === 'reschedule') {
           const stored = loadAgenda();
           const updated = stored.map(item => {
-            if (item.title === parsed.target_title) {
+            if (item.title.toLowerCase() === parsed.target_title.toLowerCase()) {
               const newStart = `${parsed.new_date}T${parsed.new_time}`;
               const oldStart = new Date(item.start);
               const oldEnd = new Date(item.end);
               const duration = (oldEnd - oldStart) / 60000;
               const newEnd = new Date(new Date(newStart).getTime() + duration * 60000);
+  
               return {
                 ...item,
                 start: new Date(newStart).toISOString(),
@@ -72,35 +73,11 @@ export default function Chatbot() {
             return item;
           });
           localStorage.setItem('appointments', JSON.stringify(updated));
+          window.dispatchEvent(new Event('agenda-updated'));
           return;
         }
   
-        // ✅ HERPLANNEN – meerdere
-        if (Array.isArray(parsed) && parsed[0]?.action === 'reschedule') {
-          const stored = loadAgenda();
-          let updated = [...stored];
-          parsed.forEach(change => {
-            updated = updated.map(item => {
-              if (item.title === change.target_title) {
-                const newStart = `${change.new_date}T${change.new_time}`;
-                const oldStart = new Date(item.start);
-                const oldEnd = new Date(item.end);
-                const duration = (oldEnd - oldStart) / 60000;
-                const newEnd = new Date(new Date(newStart).getTime() + duration * 60000);
-                return {
-                  ...item,
-                  start: new Date(newStart).toISOString(),
-                  end: newEnd.toISOString()
-                };
-              }
-              return item;
-            });
-          });
-          localStorage.setItem('appointments', JSON.stringify(updated));
-          return;
-        }
-  
-        // ✅ MEERDERE AFSPRAKEN TOEVOEGEN
+        // ✅ Meerdere afspraken
         if (Array.isArray(parsed)) {
           const stored = loadAgenda();
           const newAppointments = parsed.map(p => {
@@ -117,10 +94,11 @@ export default function Chatbot() {
             };
           });
           localStorage.setItem('appointments', JSON.stringify([...stored, ...newAppointments]));
+          window.dispatchEvent(new Event('agenda-updated'));
           return;
         }
   
-        // ✅ ENKELE AFSPRAAK TOEVOEGEN
+        // ✅ Enkele afspraak → redirect (geen update nodig)
         if (parsed?.title && parsed?.date && parsed?.time && parsed?.duration_minutes) {
           const datetime = `${parsed.date}T${parsed.time}`;
           const end = new Date(datetime);
@@ -135,10 +113,10 @@ export default function Chatbot() {
         }
   
       } catch (e) {
-        // Geen geldige JSON → behandel als tekst
+        // Geen JSON – behandel als tekst
       }
   
-      // 🟡 GEWOON TEKSTANTWOORD LATEN ZIEN
+      // Fallback: toon antwoord als tekst
       setMessages([
         ...newMessages,
         { message: answer, sender: 'bot' }
@@ -153,6 +131,8 @@ export default function Chatbot() {
       setTyping(false);
     }
   };
+  
+  
   
   
   const onKeyDown = e => {

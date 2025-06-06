@@ -103,7 +103,7 @@ export function SigninForm() {
 
         <div className="mt-4 text-center text-sm">
           Nog geen account?
-          <Link className="underline ml-2" href="/signup">
+          <Link className="underline ml-2" href="signUp">
             Registreer hier
           </Link>
         </div>
