@@ -12,7 +12,7 @@ export default function Index() {
         <div className={style.header}> 
             <div className={style.section1}>
                 <div className={style.logo}>
-                    <img src="./VisionFlowLogo.png" alt="logo" />
+                    <img src="/logo/nexgendalogo.svg" alt="logo" />
                 </div>
             </div>
 
