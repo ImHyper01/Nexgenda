@@ -38,7 +38,8 @@ export default function Chatbot() {
     setTyping(true);
   
     try {
-      const res = await fetch('http://localhost:1337/api/chat/send', {
+      const res = await fetch(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/chat/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,3 +1,4 @@
+// backend/src/api/chat/services/chat.ts
 import { OpenAI } from 'openai';
 
 const openai = new OpenAI({
@@ -27,7 +28,7 @@ Als een gebruiker vraagt om iets in te plannen, probeer dan deze informatie te e
 
 ### Als een gebruiker vraagt om een wijziging in een afspraak (zoals een nieuwe datum of tijd), geef dan een JSON-terug zoals:
 {
-  "action": "update",
+  "action": "reschedule",
   "target_title": "Verslag af",
   "new_date": "2025-06-08",
   "new_time": "15:00"
@@ -35,86 +36,35 @@ Als een gebruiker vraagt om iets in te plannen, probeer dan deze informatie te e
 
 Als de gebruiker iets wil weten (zoals deadlines), geef dan gewoon een tekstueel antwoord. Vraag om verduidelijking als nodig.
 
-Als een gebruiker je vraagt om iets in te plannen:
-
-1. Als het om één afspraak gaat, geef exact dit terug:
-{
-  "title": "lunch",
-  "date": "2025-06-10",
-  "time": "12:00",
-  "duration_minutes": 20
-}
-
-2. Als het om meerdere dagen gaat (bijvoorbeeld "van maandag t/m vrijdag"), geef dan een JSON-lijst van objecten, elk met een unieke datum. Gebruik concrete datums die vallen in de eerstvolgende week, bijvoorbeeld:
-
-[
-  {
-    "title": "lunch",
-    "date": "2025-06-10",
-    "time": "12:00",
-    "duration_minutes": 20
-  },
-  {
-    "title": "lunch",
-    "date": "2025-06-11",
-    "time": "12:00",
-    "duration_minutes": 20
-  }
-]
-
-Let op: Gebruik alleen geldige JSON. Geen tekst of uitleg eromheen. Geen commentaar. Enkel JSON als output.
-
-### Suggesties doen
-
-Als de gebruiker vraagt om hulp, focus, structuur of zegt dat hij/zij het druk heeft:
-- Analyseer de bestaande afspraken.
-- Zoek lege tijdsblokken van minstens 30 minuten.
-- Doe een voorstel met een of meerdere suggesties in dit formaat:
-
-[
-  {
-    "title": "Focusblok",
-    "date": "2025-06-11",
-    "time": "09:00",
-    "duration_minutes": 90
-  }
-]
-
-Gebruik alleen geldige JSON. Geen uitleg, geen tekst. Enkel de suggestie(s).
-
-### Verplaats afspraken
-
-Als een gebruiker vraagt om een bestaande afspraak te verplaatsen, geef dan een JSON-terug in dit exacte formaat:
-
-{
-  "action": "reschedule",
-  "target_title": "Verslag",
-  "new_date": "2025-06-09",
-  "new_time": "10:00"
-}
-
-Zorg dat target_title overeenkomt met de bestaande titel van de afspraak. Gebruik alleen JSON. Geen uitleg of tekst eromheen.
-
+Zorg dat je **alleen** geldige JSON terugstuurt, zonder extra tekst of uitleg erboven of eronder.
 `;
 
-
 export default {
-  async askSoul(prompt: string, agenda: any[] = []) {
+  async askSoul(question: string, agenda: any[] = []) {
+    // bouw agenda-context
     const agendaText = agenda.length
-      ? "De gebruiker heeft de volgende geplande items:\n" + agenda.map((a, i) => {
-          return `${i + 1}. "${a.title}" van ${new Date(a.start).toLocaleString()} tot ${new Date(a.end).toLocaleString()}`;
-        }).join("\n") + "\n"
-      : "De gebruiker heeft momenteel geen geplande items.\n";
-  
+      ? 'De gebruiker heeft de volgende geplande items:\n' +
+        agenda
+          .map(
+            (a, i) =>
+              `${i + 1}. "${a.title}" van ${new Date(
+                a.start
+              ).toLocaleString()} tot ${new Date(a.end).toLocaleString()}`
+          )
+          .join('\n') +
+        '\n'
+      : 'De gebruiker heeft momenteel geen geplande items.\n';
+
     const res = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: agendaText + "\nVraag: " + prompt },
+        { role: 'user', content: `${agendaText}\nVraag: ${question}` },
       ],
       temperature: 0.4,
       max_tokens: 600,
     });
+
     return res.choices[0].message.content.trim();
   },
 };

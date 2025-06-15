@@ -1,4 +1,4 @@
-// src/api/chat/controllers/chat.ts
+// backend/src/api/chat/controllers/chat.ts
 export default {
   async send(ctx: any) {
     const { question, agenda } = ctx.request.body;

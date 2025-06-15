@@ -42,17 +42,15 @@ export function SigninForm() {
 
   // Zodra we formState.data.jwt hebben, bewaren we dit in localStorage en navigeren we door
   useEffect(() => {
+    console.log("FORM STATE UPDATE:", formState);
     if (formState.data?.jwt) {
-      // 1) JWT in localStorage opslaan
+      console.log("– JWT ontvangen, redirect naar /dashboard");
       localStorage.setItem("jwt", formState.data.jwt);
-
-      // 2) Eventueel user-gegevens opslaan
       localStorage.setItem("user", JSON.stringify(formState.data.user));
-
-      // 3) Navigeren naar dashboard
       router.push("/dashboard");
     }
   }, [formState.data, router]);
+  
 
   return (
     <div className="w-full max-w-md mx-auto mt-8">
