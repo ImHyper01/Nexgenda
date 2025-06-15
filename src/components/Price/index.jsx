@@ -1,17 +1,52 @@
-import React from "react";
+'use client'
+import React, { useRef, useEffect } from "react";
 import styles from './style.module.scss';
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Price() {
+    const wrapperRef = useRef(null);
+    const planRefs = useRef([]);
+
+    useEffect(() => {
+        // Fade-in voor de tekst wrapper
+        gsap.from(wrapperRef.current, {
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            scrollTrigger: {
+                trigger: wrapperRef.current,
+                start: "top 80%",
+                toggleActions: "play none none none"
+            }
+        });
+
+        // Staggered fade-in voor pricing plans
+        gsap.from(planRefs.current, {
+            opacity: 0,
+            y: 40,
+            duration: 1,
+            stagger: 0.2,
+            scrollTrigger: {
+                trigger: wrapperRef.current,
+                start: "top 75%",
+                toggleActions: "play none none none"
+            }
+        });
+    }, []);
+
     return(
-        <div className={styles.container}>ß
-            <div className={styles.wrapper}>
+        <div className={styles.container}>
+            <div className={styles.wrapper} ref={wrapperRef}>
                 <h1 className={styles.title}>Our Pricing Plans</h1>
                 <p className={styles.subtitle}>
                     Choose the plan that fits for you. We offer a Free version, a Basic version and Pro version with AI recommendations.
                 </p>
             </div>
             
-            <div className={styles.pricingPlans}>
+            <div className={styles.pricingPlans} ref={planRefs}>
                 <div className={styles.plan}>
                     <h2 className={styles.planTitle}>Free Version</h2>
                     <p className={styles.planPrice}>€0 / month</p>
