@@ -4,6 +4,12 @@
     font-family: sans-serif;
     color: #2c3e50;
 
+    .logo{
+        width: 250px;
+        height: 250px;
+        margin-bottom: -80px;
+        margin-top: -80px;
+    }
     .grid {
         display: flex;
         flex-wrap: wrap;

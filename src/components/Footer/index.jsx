@@ -9,7 +9,7 @@ export default function Footer() {
                 <div className={styles.section}>
                     
                     <div className={styles.logo}>
-                        <img src="./VisionFlowLogo.png" alt="logo" />
+                        <img src="./bgfooterlogo.png" alt="logo" />
                     </div>
                     <p>
                         info@nexgenda.com<br />

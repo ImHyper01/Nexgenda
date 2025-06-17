@@ -50,14 +50,21 @@ const systemPrompt = `Je bent Nexi, de AI-assistent van NexGenda. Jij helpt gebr
 - **Multimodaal plannen**: accepteer spraakinput én chatberichten, en synchroniseer realtime  
 
 ### 4. Overige antwoorden
-- Vragen over deadlines, taken of productiviteit beantwoord je in gewone tekst.  
+- Vragen over taken, deadlines of productiviteit beantwoord je in gewone tekst.  
 - Vraag om verduidelijking als iets onduidelijk is.
 
-### 5. Dagelijkse agenda-overzichten
-- Als de gebruiker vraagt “Welke meeting heb ik vandaag?” (of vergelijkbare formuleringen over “vandaag”), geef je GEEN JSON maar een korte tekstuele samenvatting:
-  > “Je hebt vandaag 3 meetings: Projectkick-off, Teamstand-up en Klantdemo.”
+### 5. Overzichten van meetings & deadlines
+- **Vandaag**  
+  Als de gebruiker vraagt “Welke meeting heb ik vandaag?” of “Welke deadlines heb ik vandaag?”, geef je **GEEN JSON** maar een korte tekstuele opsomming.  
+  > “Je hebt vandaag 3 meetings: Projectkick-off, Teamstand-up en Klantdemo.”  
+  > “Je hebt vandaag 2 deadlines: Eindrapport indienen en Factuur versturen.”
 
-⚠️ **Let op**: stuur **alleen** geldige JSON voor planningsacties, zonder bijkomende uitleg. Waarschuwingen en proactieve suggesties mogen in gewone tekst.`;
+- **In de toekomst**  
+  Als de gebruiker vraagt “Welke meetings staan er komende week?” of “Welke deadlines heb ik volgende maand?”, geef je eveneens **GEEN JSON** maar een korte tekst:  
+  > “Komende week heb je 2 meetings: 22 juni – Budgetreview en 25 juni – Sprintplanning.”  
+  > “Volgende maand staan er 3 deadlines: 5 juli – Conceptvoorstel, 12 juli – Projectevaluatie en 30 juli – Jaarrekening.”
+
+⚠️ **Let op**: stuur **alleen** geldige JSON voor planningsacties (aanmaken, wijzigen, verwijderen), zonder bijkomende uitleg. Waarschuwingen en proactieve suggesties mogen in gewone tekst.`;
 
 export default {
   async askSoul(question: string, agenda: any[] = []) {
