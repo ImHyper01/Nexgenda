@@ -1,6 +1,6 @@
 .chatbotcontainer {
   width: 90%;
-  max-width: 700px;
+  max-width: 720px;
   height: 700px;
   margin: auto;
   display: flex;
@@ -104,3 +104,7 @@
   cursor: not-allowed;
 }
 
+.micButton{
+  width: 60px;
+  height: 60px; 
+}

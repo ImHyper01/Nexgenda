@@ -1,8 +1,7 @@
-//src/app/dashboard/components/chatbot/index.jsx
 'use client';
-import React, { useState } from 'react';
-import styles from './style.module.scss';
 
+import React, { useState, useEffect, useRef } from 'react';
+import styles from './style.module.scss';
 
 export default function Chatbot() {
   const [messages, setMessages] = useState([
@@ -13,6 +12,8 @@ export default function Chatbot() {
   ]);
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef(null);
 
   const quickActions = [
     'Wat moet ik vandaag doen?',
@@ -21,41 +22,70 @@ export default function Chatbot() {
     'Welke meetings zijn er in de toekomst?'
   ];
 
+  // Initialiseer Web Speech API
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.warn('Deze browser ondersteunt geen spraakherkenning.');
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'nl-NL';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.trim();
+      handleSend(transcript);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Spraakherkenningsfout:', event.error);
+      setListening(false);
+    };
+
+    recognitionRef.current = recognition;
+  }, []);
+
   const loadAgenda = () => {
     const stored = localStorage.getItem('appointments');
     return stored ? JSON.parse(stored) : [];
   };
-  
+
   const handleSend = async (text) => {
     const messageText = text !== undefined ? text : input.trim();
     if (!messageText) return;
     if (text === undefined) setInput('');
-  
+
     const newMessages = [
       ...messages,
       { message: messageText, sender: 'user' }
     ];
     setMessages(newMessages);
     setTyping(true);
-  
+
     try {
       const res = await fetch(
-      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/chat/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: messageText,
-          agenda: loadAgenda()
-        })
-      });
-  
+        `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/chat/send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: messageText,
+            agenda: loadAgenda()
+          })
+        }
+      );
+
       const { answer } = await res.json();
-  
-      // Probeer JSON te parsen
+
       try {
         const parsed = JSON.parse(answer);
-  
-        // ✅ Verplaatsen van een afspraak
+
         if (parsed?.action === 'reschedule') {
           const stored = loadAgenda();
           const updated = stored.map(item => {
@@ -65,7 +95,7 @@ export default function Chatbot() {
               const oldEnd = new Date(item.end);
               const duration = (oldEnd - oldStart) / 60000;
               const newEnd = new Date(new Date(newStart).getTime() + duration * 60000);
-  
+
               return {
                 ...item,
                 start: new Date(newStart).toISOString(),
@@ -78,8 +108,7 @@ export default function Chatbot() {
           window.dispatchEvent(new Event('agenda-updated'));
           return;
         }
-  
-        // ✅ Meerdere afspraken
+
         if (Array.isArray(parsed)) {
           const stored = loadAgenda();
           const newAppointments = parsed.map(p => {
@@ -99,8 +128,7 @@ export default function Chatbot() {
           window.dispatchEvent(new Event('agenda-updated'));
           return;
         }
-  
-        // ✅ Enkele afspraak → redirect (geen update nodig)
+
         if (parsed?.title && parsed?.date && parsed?.time && parsed?.duration_minutes) {
           const datetime = `${parsed.date}T${parsed.time}`;
           const end = new Date(datetime);
@@ -113,12 +141,11 @@ export default function Chatbot() {
           window.location.href = url.toString();
           return;
         }
-  
+
       } catch (e) {
         // Geen JSON – behandel als tekst
       }
-  
-      // Fallback: toon antwoord als tekst
+
       setMessages([
         ...newMessages,
         { message: answer, sender: 'bot' }
@@ -133,11 +160,21 @@ export default function Chatbot() {
       setTyping(false);
     }
   };
-  
+
   const onKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) return;
+    if (listening) {
+      recognitionRef.current.stop();
+    } else {
+      setListening(true);
+      recognitionRef.current.start();
     }
   };
 
@@ -181,6 +218,14 @@ export default function Chatbot() {
           onKeyDown={onKeyDown}
           disabled={typing}
         />
+        <button
+          className={styles.micButton}
+          onClick={toggleListening}
+          disabled={typing}
+          title={listening ? 'Stop spraakherkenning' : 'Start spraakherkenning'}
+        >
+          {listening ? '🎙️' : '🎤'}
+        </button>
         <button
           className={styles.button}
           onClick={() => handleSend()}
