@@ -17,7 +17,7 @@ export default function Index() {
             <div className={style.section2}>
                 <div className={style.button1}>
                     <button className={style.signInButton} onClick={() => router.push('/signIn')}>
-                        Sign In
+                        Sign In!
                     </button>
                 </div>
             </div>
