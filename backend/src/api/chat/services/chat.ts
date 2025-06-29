@@ -164,7 +164,6 @@ Pas de volgende features toe waar relevant en zinvol binnen de conversatie, gebr
 
 export default {
   async askSoul(question: string, agenda: any[] = []) {
-    // bouw agenda-context
     const agendaText = agenda.length
       ? 'De gebruiker heeft de volgende geplande items:\n' +
         agenda
@@ -179,15 +178,20 @@ export default {
       : 'De gebruiker heeft momenteel geen geplande items.\n';
 
     const res = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo', 
+      model: 'gpt-3.5-turbo',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `${agendaText}\nVraag: ${question}` },
       ],
-      temperature: 0.4, 
+      temperature: 0.4,
       max_tokens: 600,
     });
 
-    return res.choices[0].message.content.trim();
+    const messageContent = res.choices?.[0]?.message?.content;
+    if (!messageContent) {
+      throw new Error('Geen antwoord van OpenAI gekregen');
+    }
+
+    return messageContent.trim();
   },
 };

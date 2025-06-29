@@ -1,12 +1,12 @@
-// src/components/SigninForm.tsx
+// src/components/forms/SignInForm.tsx
 
 "use client";
 
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
-import { loginUserAction } from "@/data/actions/auth-actions";
+import { registerUserAction } from "@/data/actions/auth-actions";
 
 import {
   CardTitle,
@@ -19,38 +19,46 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/zodErrors";
-import { StrapiErrors } from "@/components/custom/strapieErrors";
+import { StrapiErrors} from "@/components/custom/strapieErrors";
 import { SubmitButton } from "@/components/custom/submitButton";
 
-interface SigninFormState {
+// Interface voor de gebruiker
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
+// State-interface voor inlogformulier
+interface SignInFormState {
   zodErrors: Record<string, string[]> | null;
-  strapiErrors: Array<{ message: string }> | null;
-  data: { jwt: string; user: any } | null;
+  strapiErrors: { message: string }[] | null;
+  data: { jwt: string; user: User } | null;
   message: string | null;
 }
 
-const INITIAL_STATE: SigninFormState = {
+const INITIAL_STATE: SignInFormState = {
   zodErrors: null,
   strapiErrors: null,
   data: null,
   message: null,
 };
 
-export function SigninForm() {
+export function SignInForm() {
   const router = useRouter();
-  const [formState, formAction] = useActionState(loginUserAction, INITIAL_STATE);
+  const [formState, formAction] = useActionState(
+    registerUserAction,
+    INITIAL_STATE
+  );
 
-  // Zodra we formState.data.jwt hebben, bewaren we dit in localStorage en navigeren we door
+  // Na succesvol inloggen: token + user opslaan en doorsturen
   useEffect(() => {
-    console.log("FORM STATE UPDATE:", formState);
     if (formState.data?.jwt) {
-      console.log("– JWT ontvangen, redirect naar /dashboard");
       localStorage.setItem("jwt", formState.data.jwt);
       localStorage.setItem("user", JSON.stringify(formState.data.user));
       router.push("/dashboard");
     }
   }, [formState.data, router]);
-  
 
   return (
     <div className="w-full max-w-md mx-auto mt-8">
@@ -59,21 +67,23 @@ export function SigninForm() {
           <CardHeader className="space-y-1">
             <CardTitle className="text-3xl font-bold">Sign In</CardTitle>
             <CardDescription>
-              Vul je e-mail en wachtwoord in om in te loggen
+              Log in met je gebruikersnaam of e-mail en wachtwoord
             </CardDescription>
           </CardHeader>
+
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="identifier">Email of gebruikersnaam</Label>
+              <Label htmlFor="identifier">E-mail of gebruikersnaam</Label>
               <Input
                 id="identifier"
                 name="identifier"
                 type="text"
-                placeholder="email@example.com"
+                placeholder="gebruikersnaam of e-mail"
                 required
               />
-              <ZodErrors error={formState?.zodErrors?.identifier} />
+              <ZodErrors error={formState.zodErrors?.identifier ?? []} />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Wachtwoord</Label>
               <Input
@@ -83,26 +93,38 @@ export function SigninForm() {
                 placeholder="wachtwoord"
                 required
               />
-              <ZodErrors error={formState?.zodErrors?.password} />
+              <ZodErrors error={formState.zodErrors?.password ?? []} />
             </div>
           </CardContent>
+
           <CardFooter className="flex flex-col space-y-2">
             <SubmitButton
               className="w-full"
-              text="Sign In"
+              text="Inloggen"
               loadingText="Bezig met inloggen..."
             />
+
             {formState.message && (
               <p className="text-green-600">{formState.message}</p>
             )}
-            <StrapiErrors error={formState?.strapiErrors} />
+
+            {formState.strapiErrors && formState.strapiErrors.length > 0 && (
+              <StrapiErrors
+                error={{
+                  // Vul hier de echte Strapi-waarden in als je ze hebt:
+                  name: "StrapiError",  
+                  status: '400',         
+                  message: formState.strapiErrors[0].message,
+                }}
+              />
+            )}
           </CardFooter>
         </Card>
 
         <div className="mt-4 text-center text-sm">
-          Nog geen account?
-          <Link className="underline ml-2" href="signUp">
-            Registreer hier
+          Heb je nog geen account?
+          <Link className="underline ml-2" href="/signUp">
+            Maak er één aan
           </Link>
         </div>
       </form>

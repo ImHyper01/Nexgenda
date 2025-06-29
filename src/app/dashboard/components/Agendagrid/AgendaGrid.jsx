@@ -1,5 +1,4 @@
 // src/app/dashboard/components/Agendagrid/AgendaGrid.jsx
-
 'use client';
 
 import React, { useState } from 'react';
@@ -12,8 +11,7 @@ import {
   isWithinInterval,
   differenceInHours
 } from 'date-fns';
-import styles from './style.module.scss'; 
-
+import styles from './style.module.scss';
 
 const hours = Array.from({ length: 10 }, (_, i) => 8 + i);
 
@@ -24,7 +22,12 @@ const colorMap = {
   blue:   '#60a5fa'
 };
 
-export default function AgendaGrid({ appointments, onAdd, onRemove }) {
+export default function AgendaGrid({
+  appointments,
+  onAdd,
+  onRemove,
+  onSelect      // ← prop toegevoegd
+}) {
   const [weekStart, setWeekStart] = useState(
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
@@ -36,14 +39,11 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
   const prev = () => setWeekStart(d => addDays(d, -7));
   const next = () => setWeekStart(d => addDays(d, 7));
 
- 
   const computeSuggestionsForDay = (day) => {
-   
     const apptsToday = appointments.filter(a =>
       isSameDay(a.start, day)
     );
 
-    
     const suggestionHours = Array.from({ length: 9 }, (_, i) => 8 + i);
     const freieSlots = suggestionHours
       .map(hour => {
@@ -55,7 +55,6 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         );
         const slotEnd = addHours(slotStart, 1);
 
-        // Check overlap met échte afspraken
         const overlaps = apptsToday.some(a =>
           a.start < slotEnd && a.end > slotStart
         );
@@ -82,7 +81,6 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         <button onClick={prev}>← Vorige</button>
         <h2>Week van {format(weekStart, 'dd MMM yyyy')}</h2>
         <button onClick={next}>Volgende →</button>
-        
         <button
           className={styles.suggestButton}
           onClick={() => computeSuggestionsForDay(new Date())}
@@ -104,11 +102,9 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         ))}
       </div>
 
-      
       <div className={styles.grid}>
         {hours.map((hour, rowIndex) => (
           <React.Fragment key={hour}>
-            
             <div
               className={styles.timeLabel}
               style={{
@@ -118,7 +114,7 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
             >
               {hour}:00
             </div>
-            
+
             {days.map((day, colIndex) => (
               <div
                 key={`${colIndex}-${hour}`}
@@ -132,7 +128,6 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
           </React.Fragment>
         ))}
 
-        
         {appointments.map((a) => {
           const dayIdx = days.findIndex((d) => isSameDay(d, a.start));
           if (dayIdx === -1) return null;
@@ -146,7 +141,10 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
             <div
               key={a.id}
               className={styles.appointment}
-              onClick={() => setSelected(a)}
+              onClick={() => {
+                setSelected(a);
+                onSelect?.(a);      // ← 'onSelect' aanroepen als meegegeven
+              }}
               style={{
                 gridColumn:      dayIdx + 2,
                 gridRow:         `${rowStart} / span ${duur}`,
@@ -162,7 +160,6 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         })}
       </div>
 
-     
       {selected && (
         <div className={styles.overlay} onClick={() => setSelected(null)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -190,7 +187,6 @@ export default function AgendaGrid({ appointments, onAdd, onRemove }) {
         </div>
       )}
 
-      
       {showSuggestModal && (
         <div className={styles.overlay} onClick={() => setShowSuggestModal(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>

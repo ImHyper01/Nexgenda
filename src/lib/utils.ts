@@ -1,12 +1,17 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
 }
 
-export function flattenAttributes(data: any): any {
-  // Check if data is a plain object; return as is if not
+/**
+ * Flattens Strapi-style nested `attributes`/`data` objects.
+ * @param data  eender welk type; objecten worden gerecursed.
+ * @returns     hetzelfde type, maar met alle geneste `attributes`/`data` gemerged.
+ */
+export function flattenAttributes(data: unknown): unknown {
+  // Niet-objecten (incl. null, Date, functies) gewoon teruggeven
   if (
     typeof data !== "object" ||
     data === null ||
@@ -16,73 +21,60 @@ export function flattenAttributes(data: any): any {
     return data;
   }
 
-  // If data is an array, apply flattenAttributes to each element and return as array
+  // Arrays recursief flattenen
   if (Array.isArray(data)) {
     return data.map((item) => flattenAttributes(item));
   }
 
-  // Initialize an object with an index signature for the flattened structure
-  let flattened: { [key: string]: any } = {};
+  // Plain object flattenen
+  const flattened: Record<string, unknown> = {};
 
-  // Iterate over each key in the object
-  for (let key in data) {
-    // Skip inherited properties from the prototype chain
-    if (!data.hasOwnProperty(key)) continue;
+  for (const key in data as Record<string, unknown>) {
+    if (!Object.prototype.hasOwnProperty.call(data, key)) continue;
 
-    // If the key is 'attributes' or 'data', and its value is an object, merge their contents
+    const value = (data as Record<string, unknown>)[key];
+
     if (
       (key === "attributes" || key === "data") &&
-      typeof data[key] === "object" &&
-      !Array.isArray(data[key])
+      typeof value === "object" &&
+      value !== null &&
+      !Array.isArray(value)
     ) {
-      Object.assign(flattened, flattenAttributes(data[key]));
+      const nested = flattenAttributes(value);
+      if (typeof nested === "object" && nested !== null) {
+        Object.assign(flattened, nested as Record<string, unknown>);
+      }
     } else {
-      // For other keys, copy the value, applying flattenAttributes if it's an object
-      flattened[key] = flattenAttributes(data[key]);
+      flattened[key] = flattenAttributes(value);
     }
   }
 
   return flattened;
 }
 
-export function getStrapiURL() {
+export function getStrapiURL(): string {
   return process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
 }
 
-export function getStrapiMedia(url: string | null) {
-  if (url == null) return null;
+export function getStrapiMedia(url: string | null): string | null {
+  if (url === null) return null;
   if (url.startsWith("data:")) return url;
   if (url.startsWith("http") || url.startsWith("//")) return url;
   return `${getStrapiURL()}${url}`;
 }
 
 export function extractYouTubeID(urlOrID: string): string | null {
-  // Regular expression for YouTube ID format
-  const regExpID = /^[a-zA-Z0-9_-]{11}$/;
+  const idRegex = /^[a-zA-Z0-9_-]{11}$/;
+  if (idRegex.test(urlOrID)) return urlOrID;
 
-  // Check if the input is a YouTube ID
-  if (regExpID.test(urlOrID)) {
-    return urlOrID;
-  }
+  const standardRegex = /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
+  const shortsRegex = /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/;
 
-  // Regular expression for standard YouTube links
-  const regExpStandard = /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
+  const matchStandard = urlOrID.match(standardRegex);
+  if (matchStandard) return matchStandard[1];
 
-  // Regular expression for YouTube Shorts links
-  const regExpShorts = /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/;
+  const matchShorts = urlOrID.match(shortsRegex);
+  if (matchShorts) return matchShorts[1];
 
-  // Check for standard YouTube link
-  const matchStandard = urlOrID.match(regExpStandard);
-  if (matchStandard) {
-    return matchStandard[1];
-  }
-
-  // Check for YouTube Shorts link
-  const matchShorts = urlOrID.match(regExpShorts);
-  if (matchShorts) {
-    return matchShorts[1];
-  }
-
-  // Return null if no match is found
   return null;
 }

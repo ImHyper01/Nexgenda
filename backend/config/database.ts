@@ -1,9 +1,25 @@
+// backend/config/database.ts
+
 import path from 'path';
 
-export default ({ env }) => {
-  const client = env('DATABASE_CLIENT', 'sqlite');
+// Typing voor de `env` functie uit Strapi
+interface EnvFn {
+  /** Haalt een string op uit de omgevingsvariabelen */
+  (key: string, defaultValue?: string): string;
+  /** Haalt een number op uit de omgevingsvariabelen */
+  int(key: string, defaultValue?: number): number;
+  /** Haalt een boolean op uit de omgevingsvariabelen */
+  bool(key: string, defaultValue?: boolean): boolean;
+}
 
-  const connections = {
+// Mogelijke database clients
+type DatabaseClient = 'mysql' | 'postgres' | 'sqlite';
+
+export default ({ env }: { env: EnvFn }) => {
+  // Cast return value naar DatabaseClient zodat TS weet welke keys geldig zijn
+  const client = env('DATABASE_CLIENT', 'sqlite') as DatabaseClient;
+
+  const connections: Record<DatabaseClient, any> = {
     mysql: {
       connection: {
         host: env('DATABASE_HOST', 'localhost'),
@@ -11,16 +27,23 @@ export default ({ env }) => {
         database: env('DATABASE_NAME', 'strapi'),
         user: env('DATABASE_USERNAME', 'strapi'),
         password: env('DATABASE_PASSWORD', 'strapi'),
-        ssl: env.bool('DATABASE_SSL', false) && {
-          key: env('DATABASE_SSL_KEY', undefined),
-          cert: env('DATABASE_SSL_CERT', undefined),
-          ca: env('DATABASE_SSL_CA', undefined),
-          capath: env('DATABASE_SSL_CAPATH', undefined),
-          cipher: env('DATABASE_SSL_CIPHER', undefined),
-          rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', true),
-        },
+        ssl:
+          env.bool('DATABASE_SSL', false) && {
+            key: env('DATABASE_SSL_KEY', undefined),
+            cert: env('DATABASE_SSL_CERT', undefined),
+            ca: env('DATABASE_SSL_CA', undefined),
+            capath: env('DATABASE_SSL_CAPATH', undefined),
+            cipher: env('DATABASE_SSL_CIPHER', undefined),
+            rejectUnauthorized: env.bool(
+              'DATABASE_SSL_REJECT_UNAUTHORIZED',
+              true
+            ),
+          },
       },
-      pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
+      pool: {
+        min: env.int('DATABASE_POOL_MIN', 2),
+        max: env.int('DATABASE_POOL_MAX', 10),
+      },
     },
     postgres: {
       connection: {
@@ -30,21 +53,33 @@ export default ({ env }) => {
         database: env('DATABASE_NAME', 'strapi'),
         user: env('DATABASE_USERNAME', 'strapi'),
         password: env('DATABASE_PASSWORD', 'strapi'),
-        ssl: env.bool('DATABASE_SSL', false) && {
-          key: env('DATABASE_SSL_KEY', undefined),
-          cert: env('DATABASE_SSL_CERT', undefined),
-          ca: env('DATABASE_SSL_CA', undefined),
-          capath: env('DATABASE_SSL_CAPATH', undefined),
-          cipher: env('DATABASE_SSL_CIPHER', undefined),
-          rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', true),
-        },
+        ssl:
+          env.bool('DATABASE_SSL', false) && {
+            key: env('DATABASE_SSL_KEY', undefined),
+            cert: env('DATABASE_SSL_CERT', undefined),
+            ca: env('DATABASE_SSL_CA', undefined),
+            capath: env('DATABASE_SSL_CAPATH', undefined),
+            cipher: env('DATABASE_SSL_CIPHER', undefined),
+            rejectUnauthorized: env.bool(
+              'DATABASE_SSL_REJECT_UNAUTHORIZED',
+              true
+            ),
+          },
         schema: env('DATABASE_SCHEMA', 'public'),
       },
-      pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
+      pool: {
+        min: env.int('DATABASE_POOL_MIN', 2),
+        max: env.int('DATABASE_POOL_MAX', 10),
+      },
     },
     sqlite: {
       connection: {
-        filename: path.join(__dirname, '..', '..', env('DATABASE_FILENAME', '.tmp/data.db')),
+        filename: path.join(
+          __dirname,
+          '..',
+          '..',
+          env('DATABASE_FILENAME', '.tmp/data.db')
+        ),
       },
       useNullAsDefault: true,
     },
