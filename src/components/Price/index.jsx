@@ -11,7 +11,7 @@ export default function Price() {
     const planRefs = useRef([]);
 
     useEffect(() => {
-        // Fade-in voor de tekst wrapper
+    
         gsap.from(wrapperRef.current, {
             opacity: 0,
             y: 50,
@@ -23,7 +23,7 @@ export default function Price() {
             }
         });
 
-        // Staggered fade-in voor pricing plans
+       
         gsap.from(planRefs.current, {
             opacity: 0,
             y: 40,
